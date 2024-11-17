@@ -10,7 +10,7 @@ import javax.persistence.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "SalaryStandard")
+@Table(name = "salary_standard")
 public class SalaryStandard {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,16 +39,16 @@ public class SalaryStandard {
     private Double baseSalary; // 基本工资
 
     // 包含计算的保险和住房公积金字段
-    @Column(name = "PensionInsurance")
+    @Column(name = "pension_insurance")
     private Double pensionInsurance;
 
-    @Column(name = "MedicalInsurance")
+    @Column(name = "medical_insurance")
     private Double medicalInsurance;
 
-    @Column(name = "UnemploymentInsurance")
+    @Column(name = "unemployment_insurance")
     private Double unemploymentInsurance;
 
-    @Column(name = "HousingFund")
+    @Column(name = "housing_fund")
     private Double housingFund;
 
 

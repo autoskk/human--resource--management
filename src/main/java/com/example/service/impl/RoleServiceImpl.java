@@ -26,7 +26,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public List<Role> getAllRoles() {
-        return roleMapper.selectList(null); // 查询所有角色
+        return roleMapper.selectAllRoles(); // 查询所有角色
     }
 
     @Override
