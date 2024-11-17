@@ -1,0 +1,10 @@
+com\example\service\CaptchaService.class
+com\example\util\CaptchaGeneratorUtil.class
+com\example\controller\CaptchaController.class
+com\example\mapper\UserMapper.class
+com\example\service\UserService.class
+com\example\service\impl\UserServiceImpl.class
+com\example\SsmApplication.class
+com\example\pojo\User.class
+com\example\controller\UserController.class
+com\example\service\impl\CaptchaServiceImpl.class
