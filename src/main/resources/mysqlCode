@@ -1,0 +1,65 @@
+CREATE TABLE role (
+                      role_id INT PRIMARY KEY AUTO_INCREMENT,               -- 角色ID
+                      role_name VARCHAR(255) NOT NULL UNIQUE                -- 角色名称（唯一）
+);
+
+CREATE TABLE user (
+                      user_id INT PRIMARY KEY AUTO_INCREMENT,               -- 用户ID
+                      username VARCHAR(255) NOT NULL UNIQUE,               -- 用户名（唯一）
+                      password VARCHAR(255) NOT NULL,                      -- 密码
+                      role_id INT NOT NULL,                                 -- 角色ID
+                      FOREIGN KEY (role_id) REFERENCES role(role_id)        -- 外键约束
+);
+
+CREATE TABLE salary_standard (
+                                 salary_standard_id INT PRIMARY KEY AUTO_INCREMENT,     -- 薪酬标准编号
+                                 standard_name VARCHAR(255) NOT NULL,                  -- 薪酬标准名称
+                                 creator VARCHAR(255) NOT NULL,                        -- 制定人
+                                 registrar VARCHAR(255) NOT NULL,                      -- 登记人
+                                 registration_time DATETIME DEFAULT CURRENT_TIMESTAMP,  -- 登记时间
+                                 review_comment TEXT,                                   -- 复核意见
+                                 status ENUM('待登记', '待复核', '已复核') NOT NULL,  -- 状态
+                                 base_salary DECIMAL(10, 2) NOT NULL,                  -- 基本工资
+                                 pension_insurance DECIMAL(10, 2) AS (base_salary * 0.08) STORED,  -- 养老保险
+                                 medical_insurance DECIMAL(10, 2) AS (base_salary * 0.02 + 3) STORED,  -- 医疗保险
+                                 unemployment_insurance DECIMAL(10, 2) AS (base_salary * 0.005) STORED,  -- 失业保险
+                                 housing_fund DECIMAL(10, 2) AS (base_salary * 0.08) STORED  -- 住房公积金
+);
+
+CREATE TABLE salary_distribution (
+                                     distribution_id INT PRIMARY KEY AUTO_INCREMENT,       -- 薪酬发放单编号
+                                     level_one_org VARCHAR(255) NOT NULL,                  -- 一级机构
+                                     level_two_org VARCHAR(255) NOT NULL,                  -- 二级机构
+                                     level_three_org VARCHAR(255) NOT NULL,                -- 三级机构
+                                     number_of_employees INT NOT NULL,                     -- 人数
+                                     total_base_salary DECIMAL(10, 2) NOT NULL,           -- 基本薪酬总额
+                                     status ENUM('待登记', '待复核', '已复核') NOT NULL,  -- 状态
+                                     registrar VARCHAR(255) NOT NULL                       -- 登记人
+);
+
+CREATE TABLE employee_compensation (
+                                       employee_id INT PRIMARY KEY AUTO_INCREMENT,            -- 档案编号
+                                       name VARCHAR(255) NOT NULL,                           -- 姓名
+                                       salary_standard_id INT NOT NULL,                       -- 关联的薪酬标准ID
+                                       allowances DECIMAL(10, 2) DEFAULT 0.00,               -- 补助
+                                       bonus DECIMAL(10, 2) DEFAULT 0.00,                    -- 奖励奖金
+                                       deductions DECIMAL(10, 2) DEFAULT 0.00,               -- 应扣奖金
+                                       distribution_id INT,                                   -- 关联的薪酬发放单号
+                                       FOREIGN KEY (salary_standard_id) REFERENCES salary_standard(salary_standard_id),  -- 外键约束
+                                       FOREIGN KEY (distribution_id) REFERENCES salary_distribution(distribution_id)   -- 外键约束
+);
+
+
+INSERT INTO role (role_name) VALUES
+                                ('用户管理员'),
+                                ('人事专员'),
+                                ('人事经理'),
+                                ('薪酬专员'),
+                                ('薪酬经理'),
+                                ('普通员工');
+
+
+
+ALTER TABLE user MODIFY role_id INT DEFAULT 6;
+
+# 以上是薪酬部分的sql语句
