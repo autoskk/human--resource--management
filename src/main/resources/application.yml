@@ -10,7 +10,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/HRM?useUnicode=true&characterEncoding=utf-8
     username: root  #用自己的
-    password: 1234 #用自己的
+    password: 7301263.. #用自己的
 mybatis-plus:
   type-aliases-package: com.example.pojo      # POJO 类的包
   configuration:

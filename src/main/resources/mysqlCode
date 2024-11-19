@@ -1,65 +1,131 @@
+-- 1. 机构表设计
+
+-- 一级机构表
+CREATE TABLE level_1_organizations (
+    level_1_id INT PRIMARY KEY,
+    level_1_name VARCHAR(100) NOT NULL
+);
+
+-- 二级机构表
+CREATE TABLE level_2_organizations (
+    level_2_id INT PRIMARY KEY,
+    level_1_id INT NOT NULL,
+    level_2_name VARCHAR(100) NOT NULL,
+    FOREIGN KEY (level_1_id) REFERENCES level_1_organizations(level_1_id) ON DELETE CASCADE
+);
+
+-- 三级机构表
+CREATE TABLE level_3_organizations (
+    level_3_id INT PRIMARY KEY,
+    level_2_id INT NOT NULL,
+    level_3_name VARCHAR(100) NOT NULL,
+    FOREIGN KEY (level_2_id) REFERENCES level_2_organizations(level_2_id) ON DELETE CASCADE
+);
+
+-- 2. 职位与员工档案表设计
+
+-- 职位分类表
+CREATE TABLE position_categories (
+    category_id INT PRIMARY KEY,
+    category_name VARCHAR(100) NOT NULL
+);
+
+-- 职位表
+CREATE TABLE positions (
+    position_id INT PRIMARY KEY,
+    category_id INT NOT NULL,
+    position_name VARCHAR(100) NOT NULL,
+    FOREIGN KEY (category_id) REFERENCES position_categories(category_id)
+);
+
+-- 员工档案表
+CREATE TABLE employee_records (
+    record_id VARCHAR(20) PRIMARY KEY,
+    employee_name VARCHAR(50) NOT NULL,
+    gender VARCHAR(10),
+    email VARCHAR(100),
+    mobile VARCHAR(15),
+    address VARCHAR(255),
+    age INT,
+    education_level VARCHAR(20),
+    major VARCHAR(100),
+    salary_standard DECIMAL(10, 2),
+    bank VARCHAR(100),
+    account_number VARCHAR(30),
+    personal_history TEXT,
+    created_by INT,
+    created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    status ENUM('正常', '待复核', '已删除'),
+    level_1_id INT,
+    level_2_id INT,
+    level_3_id INT,
+    category_id INT,
+    position_id INT,
+    photo_url VARCHAR(255),
+    FOREIGN KEY (level_1_id) REFERENCES level_1_organizations(level_1_id) ON DELETE SET NULL,
+    FOREIGN KEY (level_2_id) REFERENCES level_2_organizations(level_2_id) ON DELETE SET NULL,
+    FOREIGN KEY (level_3_id) REFERENCES level_3_organizations(level_3_id) ON DELETE SET NULL,
+    FOREIGN KEY (category_id) REFERENCES position_categories(category_id) ON DELETE SET NULL,
+    FOREIGN KEY (position_id) REFERENCES positions(position_id) ON DELETE SET NULL
+);
+
+-- 3. 薪酬管理模块设计
+
+-- 角色表
 CREATE TABLE role (
-                      role_id INT PRIMARY KEY AUTO_INCREMENT,               -- 角色ID
-                      role_name VARCHAR(255) NOT NULL UNIQUE                -- 角色名称（唯一）
+    role_id INT PRIMARY KEY AUTO_INCREMENT,
+    role_name VARCHAR(255) UNIQUE NOT NULL
 );
 
-CREATE TABLE user (
-                      user_id INT PRIMARY KEY AUTO_INCREMENT,               -- 用户ID
-                      username VARCHAR(255) NOT NULL UNIQUE,               -- 用户名（唯一）
-                      password VARCHAR(255) NOT NULL,                      -- 密码
-                      role_id INT NOT NULL,                                 -- 角色ID
-                      FOREIGN KEY (role_id) REFERENCES role(role_id)        -- 外键约束
+-- 用户表
+CREATE TABLE users (
+    user_id INT PRIMARY KEY AUTO_INCREMENT,
+    user_name VARCHAR(255) UNIQUE NOT NULL,
+    user_password VARCHAR(255) NOT NULL,
+    role_id INT NOT NULL,
+    FOREIGN KEY (role_id) REFERENCES role(role_id) ON DELETE RESTRICT
 );
 
+-- 薪酬标准表
 CREATE TABLE salary_standard (
-                                 salary_standard_id INT PRIMARY KEY AUTO_INCREMENT,     -- 薪酬标准编号
-                                 standard_name VARCHAR(255) NOT NULL,                  -- 薪酬标准名称
-                                 creator VARCHAR(255) NOT NULL,                        -- 制定人
-                                 registrar VARCHAR(255) NOT NULL,                      -- 登记人
-                                 registration_time DATETIME DEFAULT CURRENT_TIMESTAMP,  -- 登记时间
-                                 review_comment TEXT,                                   -- 复核意见
-                                 status ENUM('待登记', '待复核', '已复核') NOT NULL,  -- 状态
-                                 base_salary DECIMAL(10, 2) NOT NULL,                  -- 基本工资
-                                 pension_insurance DECIMAL(10, 2) AS (base_salary * 0.08) STORED,  -- 养老保险
-                                 medical_insurance DECIMAL(10, 2) AS (base_salary * 0.02 + 3) STORED,  -- 医疗保险
-                                 unemployment_insurance DECIMAL(10, 2) AS (base_salary * 0.005) STORED,  -- 失业保险
-                                 housing_fund DECIMAL(10, 2) AS (base_salary * 0.08) STORED  -- 住房公积金
+    salary_standard_id INT PRIMARY KEY AUTO_INCREMENT,
+    standard_name VARCHAR(255) NOT NULL,
+    creator VARCHAR(255) NOT NULL,
+    registrar VARCHAR(255) NOT NULL,
+    registration_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+    review_comment TEXT,
+    status ENUM('待登记', '待复核', '已复核') NOT NULL,
+    base_salary DECIMAL(10, 2) NOT NULL,
+    pension_insurance DECIMAL(10, 2) GENERATED ALWAYS AS (base_salary * 0.08) STORED,
+    medical_insurance DECIMAL(10, 2) GENERATED ALWAYS AS (base_salary * 0.02) STORED,
+    unemployment_insurance DECIMAL(10, 2) GENERATED ALWAYS AS (base_salary * 0.01) STORED,
+    housing_fund DECIMAL(10, 2) GENERATED ALWAYS AS (base_salary * 0.07) STORED
 );
 
+-- 薪酬发放表
 CREATE TABLE salary_distribution (
-                                     distribution_id INT PRIMARY KEY AUTO_INCREMENT,       -- 薪酬发放单编号
-                                     level_one_org VARCHAR(255) NOT NULL,                  -- 一级机构
-                                     level_two_org VARCHAR(255) NOT NULL,                  -- 二级机构
-                                     level_three_org VARCHAR(255) NOT NULL,                -- 三级机构
-                                     number_of_employees INT NOT NULL,                     -- 人数
-                                     total_base_salary DECIMAL(10, 2) NOT NULL,           -- 基本薪酬总额
-                                     status ENUM('待登记', '待复核', '已复核') NOT NULL,  -- 状态
-                                     registrar VARCHAR(255) NOT NULL                       -- 登记人
+    distribution_id INT PRIMARY KEY AUTO_INCREMENT,
+    level_1_id INT NOT NULL,
+    level_2_id INT NOT NULL,
+    level_3_id INT NOT NULL,
+    number_of_employees INT NOT NULL,
+    total_base_salary DECIMAL(10, 2) NOT NULL,
+    status ENUM('待登记', '待复核', '已复核') NOT NULL,
+    registrar VARCHAR(255) NOT NULL,
+    FOREIGN KEY (level_1_id) REFERENCES level_1_organizations(level_1_id) ON DELETE CASCADE,
+    FOREIGN KEY (level_2_id) REFERENCES level_2_organizations(level_2_id) ON DELETE CASCADE,
+    FOREIGN KEY (level_3_id) REFERENCES level_3_organizations(level_3_id) ON DELETE CASCADE
 );
 
+-- 员工薪酬表
 CREATE TABLE employee_compensation (
-                                       employee_id INT PRIMARY KEY AUTO_INCREMENT,            -- 档案编号
-                                       name VARCHAR(255) NOT NULL,                           -- 姓名
-                                       salary_standard_id INT NOT NULL,                       -- 关联的薪酬标准ID
-                                       allowances DECIMAL(10, 2) DEFAULT 0.00,               -- 补助
-                                       bonus DECIMAL(10, 2) DEFAULT 0.00,                    -- 奖励奖金
-                                       deductions DECIMAL(10, 2) DEFAULT 0.00,               -- 应扣奖金
-                                       distribution_id INT,                                   -- 关联的薪酬发放单号
-                                       FOREIGN KEY (salary_standard_id) REFERENCES salary_standard(salary_standard_id),  -- 外键约束
-                                       FOREIGN KEY (distribution_id) REFERENCES salary_distribution(distribution_id)   -- 外键约束
+    employee_id VARCHAR(20) PRIMARY KEY,
+    salary_standard_id INT NOT NULL,
+    allowances DECIMAL(10, 2) DEFAULT 0.00,
+    bonus DECIMAL(10, 2) DEFAULT 0.00,
+    deductions DECIMAL(10, 2) DEFAULT 0.00,
+    distribution_id INT,
+    FOREIGN KEY (employee_id) REFERENCES employee_records(record_id) ON DELETE CASCADE,
+    FOREIGN KEY (salary_standard_id) REFERENCES salary_standard(salary_standard_id) ON DELETE CASCADE,
+    FOREIGN KEY (distribution_id) REFERENCES salary_distribution(distribution_id) ON DELETE SET NULL
 );
-
-
-INSERT INTO role (role_name) VALUES
-                                ('用户管理员'),
-                                ('人事专员'),
-                                ('人事经理'),
-                                ('薪酬专员'),
-                                ('薪酬经理'),
-                                ('普通员工');
-
-
-
-ALTER TABLE user MODIFY role_id INT DEFAULT 6;
-
-# 以上是薪酬部分的sql语句
