@@ -56,10 +56,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void resetPassword(String username, String newPassword) {
-        User user = getUserByUsername(username);
-        if (user != null) {
-            user.setPassword(newPassword); // 可以在这里加密密码
-            userMapper.updateById(user);
-        }
+       userMapper.resetUserPassword(username,newPassword);
     }
 }

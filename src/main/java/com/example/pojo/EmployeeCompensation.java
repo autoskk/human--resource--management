@@ -10,7 +10,7 @@ import javax.persistence.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "EmployeeCompensation")
+@Table(name = "employee_compensation")
 public class EmployeeCompensation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,7 +20,7 @@ public class EmployeeCompensation {
     private String name; // 姓名
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "SalaryStandardID", nullable = false) // 关联的薪酬标准ID
+    @JoinColumn(name = "salary_standard_id", nullable = false) // 关联的薪酬标准ID
     private SalaryStandard salaryStandard; // 关联的薪酬标准
 
     @Column(nullable = false)
@@ -32,7 +32,7 @@ public class EmployeeCompensation {
     @Column(nullable = false)
     private Double deductions = 0.00; // 应扣奖金
 
-    @Column(name = "DistributionID") // 关联的薪酬发放单号
+    @Column(name = "distribution_id") // 关联的薪酬发放单号
     private Integer distributionID;
 
     // 计算字段不需要在这里定义，可以通过服务层来计算

@@ -10,7 +10,7 @@ import javax.persistence.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "User")
+@Table(name = "user")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,8 +22,7 @@ public class User {
     @Column(nullable = false)
     private String password; // 密码
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "RoleID", nullable = false)
-    private Role role; // 角色ID
+    @Column(name = "role_id", nullable = false)
+    private Integer roleId;
 
 }
