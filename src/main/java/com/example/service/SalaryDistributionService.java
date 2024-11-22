@@ -5,9 +5,9 @@ import com.example.pojo.SalaryDistribution;
 import java.util.List;
 
 public interface SalaryDistributionService {
-    SalaryDistribution getSalaryDistributionById(Long distributionId);
-    List<SalaryDistribution> getAllSalaryDistributions();
-    void addSalaryDistribution(SalaryDistribution salaryDistribution);
+    void saveSalaryDistribution(SalaryDistribution salaryDistribution);
+    SalaryDistribution getSalaryDistributionById(Integer id);
     void updateSalaryDistribution(SalaryDistribution salaryDistribution);
-    void deleteSalaryDistribution(Long distributionId);
+    void deleteSalaryDistribution(Integer id);
+    List<SalaryDistribution> getPendingDistributions();
 }

@@ -27,14 +27,18 @@
             const password = $('#password').val();
 
             $.ajax({
-                url: '/api/users/login',
+                url: '/users/login',
                 type: 'POST',
                 data: {
                     username: username,
                     password: password
                 },
                 success: function(data) {
+                    // 登录成功，将 currentUser 存储到 Session Storage
+                    sessionStorage.setItem('currentUser', data.username);
                     $('#loginMessage').html('登录成功! 欢迎, ' + data.username);
+                    // 可选: 跳转到登记薪酬标准页面
+                    window.location.href = 'SalaryStandard'; // 或其他页面
                 },
                 error: function() {
                     $('#loginMessage').html('登录失败。请检查您的用户名和密码。');

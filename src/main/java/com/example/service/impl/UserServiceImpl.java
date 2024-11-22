@@ -32,7 +32,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void addUser(User user) {
         // 密码加密可在此处处理
-        userMapper.insert(user);
+        userMapper.insertUser(user);
     }
 
     @Override
@@ -48,7 +48,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User login(String username, String password) {
         User user = userMapper.selectByUsername(username);
-        if (user != null && user.getPassword().equals(password)) { // 这里可以插入密码检验逻辑，例如哈希处理
+        if (user != null && user.getUserPassword().equals(password)) { // 这里可以插入密码检验逻辑，例如哈希处理
             return user; // 登录成功
         }
         return null; // 登录失败

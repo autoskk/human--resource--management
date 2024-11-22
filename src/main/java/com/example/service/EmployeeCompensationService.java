@@ -2,13 +2,10 @@ package com.example.service;
 
 import com.example.pojo.EmployeeCompensation;
 
-import java.util.List;
-
 public interface EmployeeCompensationService {
-    EmployeeCompensation getEmployeeCompensationById(Integer employeeId);
-    EmployeeCompensation getEmployeeCompensationByName(String name);
-    List<EmployeeCompensation> getAllEmployeeCompensations();
-    void addEmployeeCompensation(EmployeeCompensation employeeCompensation);
+    void saveEmployeeCompensation(EmployeeCompensation employeeCompensation);
+    EmployeeCompensation getEmployeeCompensationById(String employeeId);
     void updateEmployeeCompensation(EmployeeCompensation employeeCompensation);
-    void deleteEmployeeCompensation(Integer employeeId);
+    void deleteEmployeeCompensation(String employeeId);
+
 }

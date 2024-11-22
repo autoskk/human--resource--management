@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Data
@@ -14,42 +15,44 @@ import javax.persistence.*;
 public class SalaryStandard {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "salary_standard_id") // 映射数据库字段
     private Integer salaryStandardID; // 薪酬标准编号
 
-    @Column(nullable = false)
+    @Column(name = "standard_name", nullable = false) // 映射数据库字段
     private String standardName; // 薪酬标准名称
 
-    @Column(nullable = false)
+    @Column(nullable = false) // 映射数据库字段
     private String creator; // 制定人
 
-    @Column(nullable = false)
+    @Column(nullable = false) // 映射数据库字段
     private String registrar; // 登记人
 
-    @Column(nullable = false)
-    private java.util.Date registrationTime; // 登记时间
+    @Column(name = "registration_time", nullable = false) // 映射成数据库字段
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date registrationTime; // 登记时间
 
-    @Column(length = 500)
+    @Column(name = "review_comment", length = 500) // 映射成数据库字段
     private String reviewComment; // 复核意见
 
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private SalaryStatus status; // 状态
 
-    @Column(nullable = false)
+    @Column(name = "status" ,nullable = false)
+    private String status; // 状态
+
+    @Column(name = "base_salary", nullable = false) // 映射成数据库字段
     private Double baseSalary; // 基本工资
 
-    // 包含计算的保险和住房公积金字段
-    @Column(name = "pension_insurance")
-    private Double pensionInsurance;
+    // 不需要在这里定义计算字段，数据将通过数据库计算
+    @Column(name = "pension_insurance", insertable = false, updatable = false)
+    private Double pensionInsurance; // 养老金
 
-    @Column(name = "medical_insurance")
-    private Double medicalInsurance;
+    @Column(name = "medical_insurance", insertable = false, updatable = false)
+    private Double medicalInsurance; // 医疗保险
 
-    @Column(name = "unemployment_insurance")
-    private Double unemploymentInsurance;
+    @Column(name = "unemployment_insurance", insertable = false, updatable = false)
+    private Double unemploymentInsurance; // 失业保险
 
-    @Column(name = "housing_fund")
-    private Double housingFund;
+    @Column(name = "housing_fund", insertable = false, updatable = false)
+    private Double housingFund; // 住房公积金
 
 
 }

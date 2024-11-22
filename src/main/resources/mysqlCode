@@ -129,3 +129,12 @@ CREATE TABLE employee_compensation (
     FOREIGN KEY (salary_standard_id) REFERENCES salary_standard(salary_standard_id) ON DELETE CASCADE,
     FOREIGN KEY (distribution_id) REFERENCES salary_distribution(distribution_id) ON DELETE SET NULL
 );
+
+//何宇帆--插入用户角色 (变更)
+INSERT INTO role (role_name) VALUES
+('普通员工'),
+('用户管理员'),
+('人事专员'),
+('人事经理'),
+('薪酬专员'),
+('薪酬经理');

@@ -27,11 +27,11 @@
   $(document).ready(function(){
     // 获取角色列表并填充下拉框
     $.ajax({
-      url: '/api/roles', // 获取角色的API
+      url: '/roles', // 获取角色的API
       type: 'GET',
       success: function(roles) {
         roles.forEach(function(role) {
-          $('#role').append(new Option(role.roleName, role.roleID)); // 假设role有name和id属性
+          $('#role').append(new Option(role.roleName, role.roleId)); // 假设role有name和id属性
         });
       },
       error: function() {
@@ -52,8 +52,8 @@
         type: 'POST',
         contentType: 'application/json',
         data: JSON.stringify({
-          username: username,
-          password: password,
+          userName: username,
+          userPassword: password,
           roleId: roleId // 创建角色对象
         }),
         success: function() {

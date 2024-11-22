@@ -15,18 +15,13 @@ public class SalaryDistributionServiceImpl implements SalaryDistributionService 
     private SalaryDistributionMapper salaryDistributionMapper;
 
     @Override
-    public SalaryDistribution getSalaryDistributionById(Long distributionId) {
-        return salaryDistributionMapper.selectById(distributionId);
+    public void saveSalaryDistribution(SalaryDistribution salaryDistribution) {
+        salaryDistributionMapper.insertSalaryDistribution(salaryDistribution);
     }
 
     @Override
-    public List<SalaryDistribution> getAllSalaryDistributions() {
-        return salaryDistributionMapper.selectList(null); // 查询所有薪酬发放
-    }
-
-    @Override
-    public void addSalaryDistribution(SalaryDistribution salaryDistribution) {
-        salaryDistributionMapper.insert(salaryDistribution);
+    public SalaryDistribution getSalaryDistributionById(Integer id) {
+        return salaryDistributionMapper.selectById(id);
     }
 
     @Override
@@ -35,7 +30,12 @@ public class SalaryDistributionServiceImpl implements SalaryDistributionService 
     }
 
     @Override
-    public void deleteSalaryDistribution(Long distributionId) {
-        salaryDistributionMapper.deleteById(distributionId);
+    public void deleteSalaryDistribution(Integer id) {
+        salaryDistributionMapper.deleteById(id);
+    }
+
+    @Override
+    public List<SalaryDistribution> getPendingDistributions() {
+        return salaryDistributionMapper.selectPendingDistributions();
     }
 }
