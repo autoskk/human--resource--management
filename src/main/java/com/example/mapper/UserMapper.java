@@ -4,10 +4,13 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.example.pojo.User;
 import org.apache.ibatis.annotations.*;
 
+import java.util.List;
+
 @Mapper
 public interface UserMapper extends BaseMapper<User> {
-
-
+     //根据用户角色id进行查询
+    @Select("SELECT * FROM hrm.users WHERE role_id = #{roleId}")
+    List<User> selectByRoleId(Integer roleId);
     @Select("SELECT * FROM hrm.users WHERE user_name = #{username}")
     User selectByUsername(String username);
     // 重置用户密码

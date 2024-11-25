@@ -48,7 +48,7 @@
       const roleId = $('#role').val(); // 获取选择的角色ID
 
       $.ajax({
-        url: '/api/users', // 用户添加 API 端点
+        url: '/users', // 用户添加 API 端点
         type: 'POST',
         contentType: 'application/json',
         data: JSON.stringify({
@@ -58,6 +58,7 @@
         }),
         success: function() {
           $('#registerMessage').html('注册成功! 您可以现在登录。');
+          window.location.href = 'login';
         },
         error: function() {
           $('#registerMessage').html('注册失败。请重试。');

@@ -18,19 +18,26 @@ public interface SalaryDistributionMapper extends BaseMapper<SalaryDistribution>
             "VALUES (#{distributionID},#{levelOneId}, #{levelTwoId}, #{levelThreeId}, #{numberOfEmployees}, #{totalBaseSalary}, #{status}, #{registrar})")
     int insertSalaryDistribution(SalaryDistribution salaryDistribution);
 
-    // 根据 ID 查询薪酬发放记录
+    // 根据 ID 模糊查询薪酬发放记录
+    @Select("SELECT * FROM hrm.salary_distribution WHERE distribution_id LIKE CONCAT('%', #{distributionID}, '%')")
+    List<SalaryDistribution> selectById(@Param("distributionID") Integer distributionID);
+    // 根据 ID 模糊查询薪酬发放记录
     @Select("SELECT * FROM hrm.salary_distribution WHERE distribution_id = #{distributionID}")
-    SalaryDistribution selectById(@Param("distributionID") Integer distributionID);
+   SalaryDistribution findById(@Param("distributionID") Integer distributionID);
 
     // 更新薪酬发放记录
     @Update("UPDATE hrm.salary_distribution SET level_1_id = #{levelOneId}, level_2_id = #{levelTwoId}, " +
             "level_3_id = #{levelThreeId}, number_of_employees = #{numberOfEmployees}, total_base_salary = #{totalBaseSalary}, " +
             "status = #{status}, registrar = #{registrar} WHERE distribution_id = #{distributionID}")
-    int updateSalaryDistribution(SalaryDistribution salaryDistribution);
+    void updateSalaryDistribution(SalaryDistribution salaryDistribution);
 
     // 删除薪酬发放记录
     @Delete("DELETE FROM hrm.salary_distribution WHERE distribution_id = #{distributionID}")
     int deleteById(@Param("distributionID") Integer distributionID);
+
+    // 查询所有薪酬发放记录
+    @Select("SELECT * FROM hrm.salary_distribution")
+    List<SalaryDistribution> selectAllDistributions();
 
     // 这里可以添加更多自定义查询方法
 }

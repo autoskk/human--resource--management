@@ -6,6 +6,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class PageController {
 
+    @GetMapping("/index")
+    public String indexPage() {
+        return "index"; // 返回 login.jsp
+    }
+
     @GetMapping("/login")
     public String loginPage() {
         return "login"; // 返回 login.jsp
@@ -21,9 +26,28 @@ public class PageController {
         return "reset_password"; // 返回 reset_password.jsp
     }
 
-    @GetMapping("/SalaryStandard")
-    public String salaryStandardPage() {
-        return "SalaryStandard";
+    @GetMapping("/salaryManagement")
+    public String salaryManagementPage() {
+        return "salaryManagement";
     }
 
+    @GetMapping("/salaryStandardManagement")
+    public String salaryStandardManagementPage() {
+        return "salaryStandardManagement";
+    }
+
+    @GetMapping("/salaryDistributionManagement")
+    public String salaryDistributionManagementPage() {
+        return "salaryDistributionManagement";
+    }
+
+    @GetMapping("/createSalaryStandard")
+    public String createSalaryStandardPage() {
+        return "createSalaryStandard";
+    }
+
+    @GetMapping("/createDistribution")
+    public String createDistributionPage() {
+        return "createDistribution";
+    }
 }

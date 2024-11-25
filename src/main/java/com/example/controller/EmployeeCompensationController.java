@@ -4,9 +4,13 @@ import com.example.pojo.EmployeeCompensation;
 import com.example.service.EmployeeCompensationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
+import java.util.List;
+
+@Controller
 @RequestMapping("/employees/compensation")
 public class EmployeeCompensationController {
 
@@ -23,6 +27,13 @@ public class EmployeeCompensationController {
     public ResponseEntity<EmployeeCompensation> getEmployeeCompensation(@PathVariable String employeeId) {
         EmployeeCompensation employeeCompensation = employeeCompensationService.getEmployeeCompensationById(employeeId);
         return employeeCompensation != null ? ResponseEntity.ok(employeeCompensation) : ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/distribution/{distributionId}")
+    public String getDistributionEmployeeCompensation(@PathVariable Integer distributionId ,Model model) {
+        List<EmployeeCompensation> employeeCompensation = employeeCompensationService.getDistributionEmployeeCompensations(distributionId);
+        model.addAttribute("employeeCompensations", employeeCompensation);
+        return "createDistribution";
     }
 
     @PutMapping("/{employeeId}")

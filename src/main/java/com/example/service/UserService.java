@@ -12,6 +12,8 @@ public interface UserService {
     void updateUser(User user);
     void deleteUser(Long userId);
 
+    List<User> selectByRoleId(Integer roleId);
+
     User login(String username, String password); // 登录功能
     void resetPassword(String username, String newPassword); // 重置密码
 }

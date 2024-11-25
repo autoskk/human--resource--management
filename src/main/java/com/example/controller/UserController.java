@@ -25,6 +25,16 @@ public class UserController {
         }
     }
 
+    @GetMapping("/roleId/{roleId}") // 根据用户名获取用户
+    public ResponseEntity<List<User>> selectByRoleId(@PathVariable Integer roleId) {
+        List<User> user = userService.selectByRoleId(roleId);
+        if (user != null) {
+            return ResponseEntity.ok(user); // 返回 200 OK
+        } else {
+            return ResponseEntity.notFound().build(); // 返回 404 Not Found
+        }
+    }
+
     @GetMapping("/username/{username}") // 根据用户名获取用户
     public ResponseEntity<User> getUserByUsername(@PathVariable String username) {
         User user = userService.getUserByUsername(username);

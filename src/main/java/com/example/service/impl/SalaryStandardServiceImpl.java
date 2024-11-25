@@ -7,9 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class SalaryStandardServiceImpl implements SalaryStandardService {
@@ -19,9 +21,9 @@ public class SalaryStandardServiceImpl implements SalaryStandardService {
 
     @Override
     @Transactional
-    public void createSalaryStandard(SalaryStandard salaryStandard, String currentUser) {
+    public void createSalaryStandard(SalaryStandard salaryStandard) {
         // 设置基本属性
-        salaryStandard.setRegistrar(currentUser); // 登记人设置为当前用户
+//        salaryStandard.setRegistrar(currentUser); // 登记人设置为当前用户
         salaryStandard.setRegistrationTime(new Date()); // 登记时间默认当前时间
         salaryStandard.setBaseSalary(salaryStandard.getBaseSalary() != null ?
                 salaryStandard.getBaseSalary() : 0.00); // 基本工资默认为0.00
@@ -39,63 +41,69 @@ public class SalaryStandardServiceImpl implements SalaryStandardService {
     }
 
     @Override
-    public List<List<SalaryStandard>> searchSalaryStandards(Integer salaryStandardID, String keyword, Date startTime, Date endTime) {
-        // 使用 Mapper 方法进行模糊查询
-        List<List<SalaryStandard>> results = new ArrayList<>();
-        if(salaryStandardID!=null){
-            List<SalaryStandard> temp= salaryStandardMapper.findById(salaryStandardID);
-            if (startTime != null && endTime != null) {
-                temp.removeIf(record -> record.getRegistrationTime().before(startTime) ||
-                        record.getRegistrationTime().after(endTime));
-            }
-            if(temp!=null){
-                results.add(temp);
+    public List<SalaryStandard> searchSalaryStandards(Integer salaryStandardID, String keyword, Date startTime, Date endTime) {
+        // 使用 Set 来避免重复记录
+        Set<SalaryStandard> uniqueResults = new HashSet<>();
+
+        // 先处理根据 ID 查询
+        if (salaryStandardID != null) {
+            List<SalaryStandard> temp = salaryStandardMapper.findById(salaryStandardID);
+            if (temp != null) {
+                // 进一步筛选登记时间范围
+                if (startTime != null || endTime != null) {
+                    temp.removeIf(record -> record.getRegistrationTime().before(startTime) ||
+                            record.getRegistrationTime().after(endTime));
+                }
+                uniqueResults.addAll(temp); // 添加到 Set 中以避免重复
             }
         }
-        if(keyword!=null){
+
+        // 处理关键字查询
+        if (keyword != null && !keyword.isEmpty()) {
             List<SalaryStandard> results1 = salaryStandardMapper.findByCreate(keyword);
-
             List<SalaryStandard> results2 = salaryStandardMapper.findByRegistrar(keyword);
-
             List<SalaryStandard> results3 = salaryStandardMapper.findByStandardName(keyword);
 
-            if(results1 !=null){
-                // 进一步筛选登记时间范围
-                if (startTime != null && endTime != null) {
+            // 处理每个查询结果并去重
+            if (results1 != null) {
+                if (startTime != null || endTime != null) {
                     results1.removeIf(record -> record.getRegistrationTime().before(startTime) ||
                             record.getRegistrationTime().after(endTime));
                 }
-                if(results1!=null){
-                    results.add(results1);
-                }
-
+                uniqueResults.addAll(results1);
             }
-            if(results2 !=null){
-                // 进一步筛选登记时间范围
-                if (startTime != null && endTime != null) {
+
+            if (results2 != null) {
+                if (startTime != null || endTime != null) {
                     results2.removeIf(record -> record.getRegistrationTime().before(startTime) ||
                             record.getRegistrationTime().after(endTime));
                 }
-                if(results2 !=null){
-                    results.add(results2);
-                }
-
+                uniqueResults.addAll(results2);
             }
-            if(results3!=null){
-                // 进一步筛选登记时间范围
-                if (startTime != null && endTime != null) {
+
+            if (results3 != null) {
+                if (startTime != null || endTime != null) {
                     results3.removeIf(record -> record.getRegistrationTime().before(startTime) ||
                             record.getRegistrationTime().after(endTime));
                 }
-                if(results3!=null) {
-                    results.add(results3);
-                }
+                uniqueResults.addAll(results3);
             }
         }
 
+        // 如果没有提供 ID 或关键字，则获取所有记录
+        if (salaryStandardID == null && (keyword == null || keyword.isEmpty())) {
+            List<SalaryStandard> allRecords = salaryStandardMapper.findAll(); // 假设你有一个方法获取所有记录
+            if (startTime != null || endTime != null) {
+                allRecords.removeIf(record -> record.getRegistrationTime().before(startTime) ||
+                        record.getRegistrationTime().after(endTime));
+            }
+            uniqueResults.addAll(allRecords); // 添加到 Set 中以避免重复
+        }
 
-        return results;
+        // 转换 Set 为 List，返回去重后的结果
+        return uniqueResults.stream().collect(Collectors.toList());
     }
+
 
     @Override
     public List<SalaryStandard> findByStatus(String status) {
@@ -118,4 +126,22 @@ public class SalaryStandardServiceImpl implements SalaryStandardService {
         return salaryStandardMapper.findAll(); // 假设使用 findAll() 方法，具体依据实际业务实现调整
     }
 
+    @Override
+    public void deleteSalaryStandard(Integer id) {
+        salaryStandardMapper.deleteById(id);
+    }
+
+    @Override
+    public SalaryStandard findById(Integer id) {
+        return salaryStandardMapper.selectById(id);
+    }
+
+    @Override
+    public void updateSalaryStandard(SalaryStandard salaryStandard) {
+        salaryStandardMapper.update(salaryStandard);
+    }
+    @Override
+    public void registrationSalaryStandard(Integer id){
+        salaryStandardMapper.updateStatus(id);
+    }
 }

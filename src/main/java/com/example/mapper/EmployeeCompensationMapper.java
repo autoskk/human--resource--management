@@ -9,6 +9,12 @@ import java.util.List;
 @Mapper
 public interface EmployeeCompensationMapper extends BaseMapper<EmployeeCompensation> {
 
+
+
+    // 根据发放单Id查找员工薪酬
+    @Select("SELECT * FROM employee_compensation WHERE distribution_id = #{distributionId}")
+    List<EmployeeCompensation> selectByDistributionId(@Param("distributionId") Integer distributionId);
+
     // 根据Id查找员工薪酬
     @Select("SELECT * FROM employee_compensation WHERE employee_id = #{employeeId}")
     EmployeeCompensation selectByEmployeeId(@Param("employeeId") String employeeId);

@@ -46,6 +46,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<User> selectByRoleId(Integer roleId) {
+        return userMapper.selectByRoleId(roleId);
+    }
+
+    @Override
     public User login(String username, String password) {
         User user = userMapper.selectByUsername(username);
         if (user != null && user.getUserPassword().equals(password)) { // 这里可以插入密码检验逻辑，例如哈希处理

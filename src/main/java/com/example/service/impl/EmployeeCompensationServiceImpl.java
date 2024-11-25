@@ -6,6 +6,8 @@ import com.example.service.EmployeeCompensationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class EmployeeCompensationServiceImpl implements EmployeeCompensationService {
 
@@ -30,6 +32,16 @@ public class EmployeeCompensationServiceImpl implements EmployeeCompensationServ
     @Override
     public void deleteEmployeeCompensation(String employeeId) {
         employeeCompensationMapper.deleteById(employeeId);
+    }
+
+    @Override
+    public List<EmployeeCompensation> getAllEmployeeCompensations() {
+        return employeeCompensationMapper.selectAll();
+    }
+
+    @Override
+    public List<EmployeeCompensation> getDistributionEmployeeCompensations(Integer distributionId) {
+        return employeeCompensationMapper.selectByDistributionId(distributionId);
     }
 
 

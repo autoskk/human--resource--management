@@ -20,13 +20,13 @@ public class SalaryDistributionServiceImpl implements SalaryDistributionService 
     }
 
     @Override
-    public SalaryDistribution getSalaryDistributionById(Integer id) {
+    public  List<SalaryDistribution> getSalaryDistributionById(Integer id) {
         return salaryDistributionMapper.selectById(id);
     }
 
     @Override
     public void updateSalaryDistribution(SalaryDistribution salaryDistribution) {
-        salaryDistributionMapper.updateById(salaryDistribution);
+        salaryDistributionMapper.updateSalaryDistribution(salaryDistribution);
     }
 
     @Override
@@ -37,5 +37,14 @@ public class SalaryDistributionServiceImpl implements SalaryDistributionService 
     @Override
     public List<SalaryDistribution> getPendingDistributions() {
         return salaryDistributionMapper.selectPendingDistributions();
+    }
+
+    public List<SalaryDistribution> getAllSalaryDistributions() {
+        return salaryDistributionMapper.selectAllDistributions();
+    }
+
+    @Override
+    public SalaryDistribution getDistributionById(Integer id) {
+        return salaryDistributionMapper.findById(id);
     }
 }
