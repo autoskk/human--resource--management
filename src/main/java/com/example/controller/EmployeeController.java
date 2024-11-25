@@ -1,12 +1,7 @@
 package com.example.controller;
 
 import com.example.pojo.*;
-import com.example.service.impl.EmployeeService;
-import com.example.service.impl.Level1OrganizationService;
-import com.example.service.impl.Level2OrganizationService;
-import com.example.service.impl.Level3OrganizationService;
-import com.example.service.impl.PositionCategoryService;
-import com.example.service.impl.PositionService;
+import com.example.service.impl.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
@@ -39,6 +34,9 @@ public class EmployeeController {
     @Autowired
     private PositionService positionService; // 添加这一行
 
+    @Autowired
+    private SalaryStandardServiceImpl salaryStandardService; // 添加这一行
+
     // 主页
     @GetMapping("/")
     public String index() {
@@ -56,8 +54,10 @@ public class EmployeeController {
     public String showRegistrationForm(Model model) {
         model.addAttribute("level1Organizations", level1OrganizationService.getAllLevel1Organizations());
         model.addAttribute("positionCategories", positionCategoryService.getAllPositionCategories());
-        return "employee_register";  // 返回注册页面
+        model.addAttribute("salaryStandards", salaryStandardService.getAllSalaryStandardsById()); // 省略的服务调用
+        return "employee_register";
     }
+
 
     @PostMapping("/register")
     public String registerEmployee(@ModelAttribute EmployeeRecord employeeRecord) {
@@ -80,14 +80,20 @@ public class EmployeeController {
         List<EmployeeRecord> employees = employeeService.searchEmployees(level1Id, level2Id, level3Id,
                 categoryId, positionId, startDate, endDate);
 
-        // 获取一级机构、二级机构、职位类别的数据，用于下拉框展示
-        List<Level1Organization> level1Organizations = level1OrganizationService.getAllLevel1Organizations();
-        List<PositionCategory> positionCategories = positionCategoryService.getAllPositionCategories();
+        model.addAttribute("level1Organizations", level1OrganizationService.getAllLevel1Organizations());
+        model.addAttribute("positionCategories", positionCategoryService.getAllPositionCategories());
+
+        if (level1Id != null) {
+            List<Level2Organization> level2s = level2OrganizationService.getAllLevel2OrganizationsByLevel1Id(level1Id);
+            model.addAttribute("level2Organizations", level2s);
+        }
+
+        if (level2Id != null) {
+            List<Level3Organization> level3s = level3OrganizationService.getAllLevel3OrganizationsByLevel2Id(level2Id);
+            model.addAttribute("level3Organizations", level3s);
+        }
 
         model.addAttribute("employees", employees);
-        model.addAttribute("level1Organizations", level1Organizations);
-        model.addAttribute("positionCategories", positionCategories);
-
         return "employee_list";  // 返回员工列表
     }
 
@@ -96,7 +102,22 @@ public class EmployeeController {
     @GetMapping("/update")
     public String showUpdateForm(@RequestParam String recordId, Model model) {
         EmployeeRecord employee = employeeService.getEmployee(recordId);
+
         model.addAttribute("employee", employee);
+
+        // 通过id获取名称，直接传递中文名称给JSP
+        Level1Organization level1Org = level1OrganizationService.getLevel1Organization(employee.getLevel1Id());
+        Level2Organization level2Org = level2OrganizationService.getLevel2Organization(employee.getLevel2Id());
+        Level3Organization level3Org = level3OrganizationService.getLevel3Organization(employee.getLevel3Id());
+        PositionCategory category = positionCategoryService.getPositionCategory(employee.getCategoryId());
+        Position position = positionService.getPosition(employee.getPositionId());
+
+        model.addAttribute("level1OrgName", level1Org != null ? level1Org.getLevel1Name() : "未找到");
+        model.addAttribute("level2OrgName", level2Org != null ? level2Org.getLevel2Name() : "未找到");
+        model.addAttribute("level3OrgName", level3Org != null ? level3Org.getLevel3Name() : "未找到");
+        model.addAttribute("categoryName", category != null ? category.getCategoryName() : "未找到");
+        model.addAttribute("positionName", position != null ? position.getPositionName() : "未找到");
+
         return "employee_update";  // 返回更新页面
     }
 
@@ -106,6 +127,8 @@ public class EmployeeController {
         return "redirect:/employee/list"; // 更新后重定向到员工列表
     }
 
+
+    // 人力资源档案复核
     // 人力资源档案复核
     @GetMapping("/review")
     public String reviewEmployees(Model model) {
@@ -114,17 +137,46 @@ public class EmployeeController {
         return "employee_review";  // 返回复核页面
     }
 
-    @PostMapping("/review")
-    public String reviewEmployee(@RequestParam String recordId, @RequestParam boolean approve) {
+    // 复核员工档案
+    @GetMapping("/review/{recordId}")
+    public String showReviewForm(@PathVariable String recordId, Model model) {
         EmployeeRecord employee = employeeService.getEmployee(recordId);
-        if (approve) {
-            employee.setStatus("正常"); // 修改状态为正常
-        } else {
-            employee.setStatus("已删除"); // 修改状态为已删除
+
+        model.addAttribute("employee", employee);
+
+        // 通过id获取名称，直接传递中文名称给JSP
+        Level1Organization level1Org = level1OrganizationService.getLevel1Organization(employee.getLevel1Id());
+        Level2Organization level2Org = level2OrganizationService.getLevel2Organization(employee.getLevel2Id());
+        Level3Organization level3Org = level3OrganizationService.getLevel3Organization(employee.getLevel3Id());
+        PositionCategory category = positionCategoryService.getPositionCategory(employee.getCategoryId());
+        Position position = positionService.getPosition(employee.getPositionId());
+
+        model.addAttribute("level1OrgName", level1Org != null ? level1Org.getLevel1Name() : "未找到");
+        model.addAttribute("level2OrgName", level2Org != null ? level2Org.getLevel2Name() : "未找到");
+        model.addAttribute("level3OrgName", level3Org != null ? level3Org.getLevel3Name() : "未找到");
+        model.addAttribute("categoryName", category != null ? category.getCategoryName() : "未找到");
+        model.addAttribute("positionName", position != null ? position.getPositionName() : "未找到");
+
+
+        return "employee_review_detail"; // 返回复核详细页面
+    }
+
+    // 处理复核操作
+    @PostMapping("/review")
+    public String processReview(@RequestParam String recordId, @RequestParam boolean approve) {
+        EmployeeRecord employee = employeeService.getEmployee(recordId);
+        employee.setStatus("已复核"); // 将状态修改为已复核
+
+        // 这里可以加入额外的条件逻辑，保存审核的决定
+        if (!approve) {
+            // 处理拒绝逻辑，例如记录原因等
         }
-        employeeService.editEmployee(employee);
+
+        employeeService.editEmployee(employee); // 保存修改
         return "redirect:/employee/review"; // 复核后重定向到复核列表
     }
+
+
     @GetMapping("/level2")
     @ResponseBody
     public List<Level2Organization> getLevel2Organizations(@RequestParam int level1Id) {
