@@ -39,6 +39,11 @@ public interface EmployeeCompensationMapper extends BaseMapper<EmployeeCompensat
                                    @Param("deductions") Double deductions);
 
     // 删除员工薪酬信息
-    @Delete("DELETE FROM employee_compensation WHERE employee_id = #{employeeId}")
-    int deleteEmployeeCompensation(@Param("employeeId") String employeeId);
+    @Delete("DELETE FROM employee_compensation WHERE employee_id = #{employeeId} AND distribution_id = #{distributionId}")
+    int deleteById(@Param("employeeId") String employeeId , @Param("distributionId")Integer distributionId);
+
+    @Delete("DELETE FROM employee_compensation WHERE distribution_id = #{distributionId}")
+    int deleteByDistributionId(@Param("distributionId") Integer distributionId);
+
+
 }

@@ -69,7 +69,7 @@
         <input type="text" id="distributionID" name="distributionID" readonly/>
 
         <label>一级机构:</label>
-        <select id="levelOneId" name="levelOneId" required>
+        <select id="levelOneId" name="levelOneId"  readonly>
             <option value="" disabled selected>请选择一级机构</option>
             <c:forEach var="level1" items="${level1Organizations}">
                 <option value="${level1.level1Id}">${level1.level1Name}</option>
@@ -77,12 +77,12 @@
         </select>
 
         <label>二级机构:</label>
-        <select id="levelTwoId" name="levelTwoId" required>
+        <select id="levelTwoId" name="levelTwoId"  readonly>
             <option value="" disabled selected>请选择二级机构</option>
         </select>
 
         <label>三级机构:</label>
-        <select id="levelThreeId" name="levelThreeId" required>
+        <select id="levelThreeId" name="levelThreeId" readonly>
             <option value="" disabled selected>请选择三级机构</option>
         </select>
 
@@ -101,6 +101,9 @@
 
         <label>登记人:</label>
         <input type="text" name="registrar" readonly/>
+
+        <label>登记时间:</label>
+        <input type="text" name="registrationTime" readonly/>
 
         <div>
             <button type="button" id="saveDistributionButton">保存</button>
@@ -420,27 +423,12 @@
         })
             .then(response => {
                 if (response.status === 201) {
-                    alert('薪酬发放单已保存');
+                    alert('薪酬发放单已保存为待登记状态');
+                } else {
+                    alert('保存失败');
                 }
-                // else {
-                //     alert('保存失败');
-                // }
             })
-           // .catch(error => alert('保存失败: ' + error.message));
-        fetch('/salary-distributions/' + formData.distributionID, {
-            method: 'PUT',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(formData)
-        })
-            .then(response => {
-
-                if (response.ok) {
-                    alert('薪酬发放单已保存');
-                }
-                // else {
-                //     alert('保存失败');
-                // }
-            })
+            .catch(error => alert('保存失败: ' + error.message));
     }
 
     function registerDistribution() {
@@ -499,29 +487,19 @@
 
     function deleteEmployeeCompensation(employeeId, distributionId) {
         if (confirm('确认要删除此员工薪酬信息吗？')) {
-            fetch('/employees/compensation/'+employeeId+'?distributionId='+distributionId, {
-                method: 'DELETE',
+            fetch('/employees/compensation/' + employeeId, {
+                method: 'DELETE'
             })
                 .then(response => {
                     if (response.ok) {
                         alert('员工薪酬信息已删除');
-                        updateEmployeeCompensations(distributionId); // 刷新列表
+                        updateEmployeeCompensations(distributionId); // Refresh the list
                     } else {
                         alert('删除失败');
                     }
                 })
                 .catch(error => alert('删除失败: ' + error.message));
         }
-    }
-
-    function editEmployeeCompensation(){
-        const distributionID = $('input[name="distributionID"]').val();
-        $('input[name="distributionId"]').val(distributionID);
-
-
-        // Set the distribution ID in the modal
-        loadSalaryStandards();  // Load salary standards
-        $('#employeeCompensationModal').fadeIn();  // Show modal
     }
 
     function showEmployeeCompensationForm() {

@@ -30,8 +30,8 @@ public class EmployeeCompensationServiceImpl implements EmployeeCompensationServ
     }
 
     @Override
-    public void deleteEmployeeCompensation(String employeeId) {
-        employeeCompensationMapper.deleteById(employeeId);
+    public void deleteEmployeeCompensation(String employeeId,Integer distributionId) {
+        employeeCompensationMapper.deleteById(employeeId,distributionId);
     }
 
     @Override
@@ -42,6 +42,11 @@ public class EmployeeCompensationServiceImpl implements EmployeeCompensationServ
     @Override
     public List<EmployeeCompensation> getDistributionEmployeeCompensations(Integer distributionId) {
         return employeeCompensationMapper.selectByDistributionId(distributionId);
+    }
+
+    @Override
+    public void deleteDistributionEmployeeCompensation(Integer distributionId) {
+        employeeCompensationMapper.deleteByDistributionId(distributionId);
     }
 
 

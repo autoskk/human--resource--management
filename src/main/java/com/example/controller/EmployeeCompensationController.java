@@ -30,10 +30,16 @@ public class EmployeeCompensationController {
     }
 
     @GetMapping("/distribution/{distributionId}")
-    public String getDistributionEmployeeCompensation(@PathVariable Integer distributionId ,Model model) {
+    public ResponseEntity< List<EmployeeCompensation>> getDistributionEmployeeCompensation(@PathVariable Integer distributionId ,Model model) {
+        List<EmployeeCompensation> employeeCompensation = employeeCompensationService.getDistributionEmployeeCompensations(distributionId);
+        return employeeCompensation != null ? ResponseEntity.ok(employeeCompensation) : ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/getEmployeeCompensation/{distributionId}")
+    public String getEmployeeCompensation(@PathVariable Integer distributionId ,Model model) {
         List<EmployeeCompensation> employeeCompensation = employeeCompensationService.getDistributionEmployeeCompensations(distributionId);
         model.addAttribute("employeeCompensations", employeeCompensation);
-        return "createDistribution";
+        return "/createDistribution";
     }
 
     @PutMapping("/{employeeId}")
@@ -44,9 +50,10 @@ public class EmployeeCompensationController {
     }
 
     @DeleteMapping("/{employeeId}")
-    public ResponseEntity<Void> deleteEmployeeCompensation(@PathVariable String employeeId) {
-        employeeCompensationService.deleteEmployeeCompensation(employeeId);
+    public ResponseEntity<Void> deleteEmployeeCompensation(@PathVariable String employeeId ,@RequestParam  Integer distributionId) {
+        employeeCompensationService.deleteEmployeeCompensation(employeeId,distributionId);
         return ResponseEntity.noContent().build(); // 204 No Content
     }
+
 
 }

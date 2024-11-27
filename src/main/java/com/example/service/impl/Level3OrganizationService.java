@@ -35,4 +35,8 @@ public class Level3OrganizationService {
     public List<Level3Organization> getAllLevel3Organizations() {
         return level3OrganizationMapper.findAll();
     }
+
+    public Level3Organization getOrganizationById(Integer id) {
+        return level3OrganizationMapper.findById(id);
+    }
 }

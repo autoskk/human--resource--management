@@ -54,6 +54,7 @@ public class EmployeeService {
         return employeeMapper.searchEmployees(level1Id, level2Id, level3Id, categoryId, positionId, startDate, endDate);
     }
 
+//<<<<<<< HEAD
     private String generateRecordId(EmployeeRecord employeeRecord) {
         // 获取当前年份
         String year = String.valueOf(java.util.Calendar.getInstance().get(java.util.Calendar.YEAR));
@@ -74,6 +75,44 @@ public class EmployeeService {
 
 
 
+
+//=======
+    // 添加新的方法到 EmployeeService
+    public Integer countEmployeesByLevel(int level1Id, int level2Id, int level3Id) {
+        // 查询数据库返回符合条件的员工数量
+        return employeeMapper.countEmployeesByLevel(level1Id, level2Id, level3Id);
+    }
+
+    public Double calculateTotalBaseSalary(int level1Id, int level2Id, int level3Id) {
+        // 查询数据库返回符合条件的员工总薪酬
+        return employeeMapper.calculateTotalBaseSalary(level1Id, level2Id, level3Id);
+    }
+//>>>>>>> ca48bc6ac24878be5ebe8e624b2776f9cb3e0292
+
+    public void softDeleteEmployee(String recordId) {
+        EmployeeRecord employeeRecord = employeeMapper.findById(recordId);
+        if (employeeRecord == null) {
+            throw new IllegalArgumentException("员工档案不存在");
+        }
+        if ("待复核".equals(employeeRecord.getStatus())) {
+            throw new IllegalArgumentException("状态为'待复核'的员工档案不能删除");
+        }
+
+        employeeMapper.softDeleteEmployee(recordId);
+    }
+
+
+    public void restoreEmployee(String recordId) {
+        EmployeeRecord employeeRecord = employeeMapper.findById(recordId);
+        if (employeeRecord == null) {
+            throw new IllegalArgumentException("员工档案不存在");
+        }
+        if (!"已删除".equals(employeeRecord.getStatus())) {
+            throw new IllegalArgumentException("该档案不是已删除状态，无法恢复");
+        }
+
+        employeeMapper.restoreEmployee(recordId);
+    }
 
 
 }

@@ -8,9 +8,11 @@ public interface EmployeeCompensationService {
     void saveEmployeeCompensation(EmployeeCompensation employeeCompensation);
     EmployeeCompensation getEmployeeCompensationById(String employeeId);
     void updateEmployeeCompensation(EmployeeCompensation employeeCompensation);
-    void deleteEmployeeCompensation(String employeeId);
+    void deleteEmployeeCompensation(String employeeId,Integer distributionId);
 
     List<EmployeeCompensation> getAllEmployeeCompensations();
 
     List<EmployeeCompensation> getDistributionEmployeeCompensations(Integer distributionId);
+
+    void deleteDistributionEmployeeCompensation(Integer distributionId);
 }

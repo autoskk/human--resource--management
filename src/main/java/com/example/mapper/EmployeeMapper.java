@@ -54,11 +54,38 @@ public interface EmployeeMapper {
                                          @Param("startDate") Date startDate,
                                          @Param("endDate") Date endDate);
 
+//<<<<<<< HEAD
     @Select("SELECT COUNT(*) FROM employee_records WHERE level_1_id = #{level1Id} AND level_2_id = #{level2Id} AND level_3_id = #{level3Id}")
     int countByOrganizations(@Param("level1Id") int level1Id, @Param("level2Id") int level2Id, @Param("level3Id") int level3Id);
 
 
 
 
+//=======
+    //  统计特定组织下的员工数量
+    @Select("SELECT COUNT(*) FROM employee_records WHERE level_1_id = #{level1Id} AND level_2_id = #{level2Id} AND level_3_id = #{level3Id}")
+    Integer countEmployeesByLevel(@Param("level1Id") int level1Id,
+                              @Param("level2Id") int level2Id,
+                              @Param("level3Id") int level3Id);
+
+    // 计算特定组织下员工的基本薪资总额
+    @Select("SELECT SUM(ss.base_salary) " +
+            "FROM employee_records er " +
+            "JOIN salary_standard ss ON er.salary_standard = ss.salary_standard_id " +
+            "WHERE er.level_1_id = #{level1Id} " +
+            "AND er.level_2_id = #{level2Id} " +
+            "AND er.level_3_id = #{level3Id}")
+    Double calculateTotalBaseSalary(@Param("level1Id") int level1Id,
+                                    @Param("level2Id") int level2Id,
+                                    @Param("level3Id") int level3Id);
+//>>>>>>> ca48bc6ac24878be5ebe8e624b2776f9cb3e0292
+
+    // 在EmployeeMapper.java中
+    @Update("UPDATE employee_records SET status = '已删除' WHERE record_id = #{recordId} AND status != '待复核'")
+    void softDeleteEmployee(String recordId);
+
+
+    @Update("UPDATE employee_records SET status = '正常' WHERE record_id = #{recordId} AND status = '已删除'")
+    void restoreEmployee(String recordId);
 
 }

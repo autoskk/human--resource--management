@@ -21,14 +21,22 @@ public class SalaryDistributionController {
     private SalaryDistributionService salaryDistributionService;
     @Autowired
     private EmployeeCompensationService employeeCompensationService;
-    // 获取所有薪酬标准
+
+    // 获取所有薪酬
     @GetMapping
     public String getAllSalaryDistribution(Model model) {
-        List<SalaryDistribution> allSalaryDistribution = salaryDistributionService.getAllSalaryDistributions();
-        model.addAttribute("salaryDistribution", allSalaryDistribution); // 将结果添加到模型中
 
+
+
+
+        List<SalaryDistribution> allSalaryDistribution = salaryDistributionService.getAllSalaryDistributions();
+
+//        System.out.println(allSalaryDistribution);
         // 假设还有员工薪酬信息
         List<EmployeeCompensation> allEmployeeCompensations = employeeCompensationService.getAllEmployeeCompensations();
+
+
+        model.addAttribute("salaryDistribution", allSalaryDistribution); // 将结果添加到模型中
         model.addAttribute("employeeCompensations", allEmployeeCompensations); // 将员工薪酬信息添加到模型中
 
         return "salaryDistributionManagement"; // 返回相应的 JSP 视图名
@@ -39,6 +47,7 @@ public class SalaryDistributionController {
     @PostMapping
     public ResponseEntity<String> createSalaryDistribution(@RequestBody SalaryDistribution salaryDistribution) {
         try {
+            System.out.println(salaryDistribution);
             salaryDistributionService.saveSalaryDistribution(salaryDistribution);
             return ResponseEntity.status(HttpStatus.CREATED).body("薪资分配创建成功"); // 201 Created
         } catch (Exception e) {
@@ -68,6 +77,7 @@ public class SalaryDistributionController {
     @PutMapping("/{id}")
     public ResponseEntity<String> updateSalaryDistribution(@PathVariable Integer id, @RequestBody SalaryDistribution salaryDistribution) {
         try {
+            System.out.println(salaryDistribution);
             salaryDistribution.setDistributionID(id); // 确保 ID 一致
             salaryDistributionService.updateSalaryDistribution(salaryDistribution);
             return ResponseEntity.ok("薪资分配更新成功"); // 200 OK

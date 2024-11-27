@@ -61,37 +61,73 @@
     </style>
     <script>
         $(document).ready(function() {
-            $('#queryLevel1Id').change(function() {
-                var level1Id = $(this).val();
-                $.get("/employee/level2", { level1Id: level1Id }, function(data) {
-                    $("#queryLevel2Id").empty().append('<option value="" disabled selected>请选择二级机构</option>');
-                    $.each(data, function(index, level2) {
-                        $("#queryLevel2Id").append('<option value="' + level2.level2Id + '">' + level2.level2Name + '</option>');
-                    });
-                    $("#queryLevel3Id").empty().append('<option value="" disabled selected>请选择三级机构</option>');
-                });
-            });
+            // 当页面加载时，为每一行的机构 ID 查询对应的名称
+            $('tr.employee_row').each(function () {
+                let levelOneId = $(this).find('.level-one-id').text().trim();
+                let levelTwoId = $(this).find('.level-two-id').text().trim();
+                let levelThreeId = $(this).find('.level-three-id').text().trim();
+                let positionId = $(this).find('.position-id').text().trim();
 
-            $('#queryLevel2Id').change(function() {
-                var level2Id = $(this).val();
-                $.get("/employee/level3", { level2Id: level2Id }, function(data) {
-                    $("#queryLevel3Id").empty().append('<option value="" disabled selected>请选择三级机构</option>');
-                    $.each(data, function(index, level3) {
-                        $("#queryLevel3Id").append('<option value="' + level3.level3Id + '">' + level3.level3Name + '</option>');
-                    });
-                });
-            });
+                // 查询一级机构名称
+                if (levelOneId) {
+                    $.get('/organizations/level1/' + levelOneId, function (data) {
+                        $(this).find('.level-one-id').text(data);
+                    }.bind(this));
+                }
 
-            $('#queryCategoryId').change(function() {
-                var categoryId = $(this).val();
-                $.get("/employee/positions", { categoryId: categoryId }, function(data) {
-                    $("#queryPositionId").empty().append('<option value="" disabled selected>请选择职位</option>');
-                    $.each(data, function(index, position) {
-                        $("#queryPositionId").append('<option value="' + position.positionId + '">' + position.positionName + '</option>');
+                // 查询二级机构名称
+                if (levelTwoId) {
+                    $.get('/organizations/level2/' + levelTwoId, function (data) {
+                        $(this).find('.level-two-id').text(data);
+                    }.bind(this));
+                }
+
+                // 查询三级机构名称
+                if (levelThreeId) {
+                    $.get('/organizations/level3/' + levelThreeId, function (data) {
+                        $(this).find('.level-three-id').text(data);
+                    }.bind(this));
+                }
+
+                if (positionId) {
+                    $.get('/organizations/position/' + positionId, function (data) {
+                        $(this).find('.position-id').text(data);
+                    }.bind(this));
+                }
+
+
+                $('#queryLevel1Id').change(function () {
+                    var level1Id = $(this).val();
+                    $.get("/employee/level2", {level1Id: level1Id}, function (data) {
+                        $("#queryLevel2Id").empty().append('<option value="" disabled selected>请选择二级机构</option>');
+                        $.each(data, function (index, level2) {
+                            $("#queryLevel2Id").append('<option value="' + level2.level2Id + '">' + level2.level2Name + '</option>');
+                        });
+                        $("#queryLevel3Id").empty().append('<option value="" disabled selected>请选择三级机构</option>');
+                    });
+                });
+
+                $('#queryLevel2Id').change(function () {
+                    var level2Id = $(this).val();
+                    $.get("/employee/level3", {level2Id: level2Id}, function (data) {
+                        $("#queryLevel3Id").empty().append('<option value="" disabled selected>请选择三级机构</option>');
+                        $.each(data, function (index, level3) {
+                            $("#queryLevel3Id").append('<option value="' + level3.level3Id + '">' + level3.level3Name + '</option>');
+                        });
+                    });
+                });
+
+                $('#queryCategoryId').change(function () {
+                    var categoryId = $(this).val();
+                    $.get("/employee/positions", {categoryId: categoryId}, function (data) {
+                        $("#queryPositionId").empty().append('<option value="" disabled selected>请选择职位</option>');
+                        $.each(data, function (index, position) {
+                            $("#queryPositionId").append('<option value="' + position.positionId + '">' + position.positionName + '</option>');
+                        });
                     });
                 });
             });
-        });
+        })
     </script>
 </head>
 <body>
@@ -142,22 +178,40 @@
         <th>档案编号</th>
         <th>姓名</th>
         <th>性别</th>
-        <th>邮箱</th>
+        <th>一级机构</th>
+        <th>二级机构</th>
+        <th>三级机构</th>
+        <th>职位名称</th>
         <th>操作</th>
     </tr>
     <c:forEach var="employee" items="${employees}">
-        <tr>
+        <tr class="employee_row">
             <td>${employee.recordId}</td>
             <td>${employee.employeeName}</td>
             <td>${employee.gender}</td>
-            <td>${employee.email}</td>
+            <td class="level-one-id">${employee.level1Id}</td>
+            <td class="level-two-id">${employee.level2Id}</td>
+            <td class="level-three-id">${employee.level3Id}</td>
+            <td class="position-id">${employee.positionId}</td>
             <td>
                 <a href="/employee/update?recordId=${employee.recordId}">编辑</a>
-                <a href="/employee/delete?recordId=${employee.recordId}">删除</a>
+                <c:if test="${employee.status == '正常'}">
+                    <form action="/employee/delete" method="post" style="display:inline;">
+                        <input type="hidden" name="recordId" value="${employee.recordId}">
+                        <input type="submit" value="删除" onclick="return confirm('确定要删除该档案吗？')">
+                    </form>
+                </c:if>
+                <c:if test="${employee.status == '已删除'}">
+                    <form action="/employee/restore" method="post" style="display:inline;">
+                        <input type="hidden" name="recordId" value="${employee.recordId}">
+                        <input type="submit" value="恢复" onclick="return confirm('确定要恢复该档案吗？')">
+                    </form>
+                </c:if>
             </td>
+
         </tr>
     </c:forEach>
 </table>
-<a href="employee?action=form">添加员工</a>
+
 </body>
 </html>

@@ -1,19 +1,26 @@
 package com.example.controller;
 
 import com.example.pojo.*;
+//<<<<<<< HEAD
 import com.example.service.SalaryStandardService;
 import com.example.service.UserService;
+//=======
+//>>>>>>> ca48bc6ac24878be5ebe8e624b2776f9cb3e0292
 import com.example.service.impl.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
+//<<<<<<< HEAD
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+//=======
+//>>>>>>> ca48bc6ac24878be5ebe8e624b2776f9cb3e0292
 import java.util.Date;
 import java.util.List;
 
@@ -73,7 +80,13 @@ public class EmployeeController {
         // 这里可以进行进一步处理，例如处理上传的 Base64 数据
         employeeRecord.setPhotoUrl(photoUrl); // 设置 photoUrl
         employeeService.addEmployee(employeeRecord);
+//<<<<<<< HEAD
         System.out.println(employeeRecord);
+//=======
+
+        //添加逻辑
+        //添加机构发放单记录和员工薪酬记录
+//>>>>>>> ca48bc6ac24878be5ebe8e624b2776f9cb3e0292
         return "redirect:/employee/list"; // 提交后重定向到员工列表
     }
 
@@ -178,6 +191,28 @@ public class EmployeeController {
     }
 
 
+    @PostMapping("/delete")
+    public String deleteEmployee(@RequestParam String recordId) {
+        try {
+            employeeService.softDeleteEmployee(recordId);
+        } catch (IllegalArgumentException e) {
+            // 处理错误，例如返回错误信息到页面
+        }
+        return "redirect:/employee/list"; // 重定向到员工列表
+    }
+
+
+    @PostMapping("/restore")
+    public String restoreEmployee(@RequestParam String recordId) {
+        try {
+            employeeService.restoreEmployee(recordId);
+        } catch (IllegalArgumentException e) {
+            // 处理错误，例如返回错误信息到页面
+        }
+        return "redirect:/employee/list"; // 重定向到员工列表
+    }
+
+
 
     // 人力资源档案复核
     // 人力资源档案复核
@@ -230,6 +265,16 @@ public class EmployeeController {
     }
 
 
+
+//<<<<<<< HEAD
+
+//=======
+    @GetMapping("/level1")
+    @ResponseBody
+    public List<Level1Organization> getLevel1Organizations() {
+        return level1OrganizationService.getAllLevel1Organizations();
+    }
+//>>>>>>> ca48bc6ac24878be5ebe8e624b2776f9cb3e0292
     @GetMapping("/level2")
     @ResponseBody
     public List<Level2Organization> getLevel2Organizations(@RequestParam int level1Id) {
@@ -249,6 +294,37 @@ public class EmployeeController {
     }
 
 
+    @GetMapping("/getCount")
+    public String getCountEmployeesByLevel(@RequestParam Integer level1Id,
+                                @RequestParam Integer level2Id,
+                                @RequestParam Integer level3Id
+                              ) {
+        Integer Count = employeeService.countEmployeesByLevel(level1Id, level2Id, level3Id);
+        System.out.println(Count);
+        return String.valueOf(Count != null ? Count : 0.0); // 处理 null
+    }
+
+    @GetMapping("/getTotalBaseSalary")
+    public String getTotalBaseSalary(@RequestParam Integer level1Id,
+                                        @RequestParam Integer level2Id,
+                                        @RequestParam Integer level3Id
+    ) {
+        Double total = employeeService.calculateTotalBaseSalary(level1Id, level2Id, level3Id);
+        System.out.println(total);
+        return String.valueOf(total != null ? total : 0.0); // 处理 null
+    }
+
+    @GetMapping("/{recordId}")
+    public ResponseEntity<EmployeeRecord> getEmployeeRecord(@PathVariable String recordId) {
+        EmployeeRecord employee = employeeService.getEmployee(recordId);
+        //System.out.println(employee);
+        // Check if salaryStandard exists
+        if (employee == null) {
+            return ResponseEntity.notFound().build(); // Return 404 Not Found if standard doesn't exist
+        }
+
+        return ResponseEntity.ok(employee); // Return the salary standard as JSON
+    }
 
 
 
