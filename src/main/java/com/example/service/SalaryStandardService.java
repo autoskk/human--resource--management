@@ -22,6 +22,8 @@ public interface SalaryStandardService {
     // 根据基础工资范围查询薪酬标准
     List<SalaryStandard> findByBaseSalaryBetween(Double minSalary, Double maxSalary);
 
+    List<SalaryStandard> findApprovedSalaryStandards();
+
     // 获取所有待登记的薪酬发放记录
     List<SalaryStandard> getAllSalaryRecords();
 
@@ -32,4 +34,11 @@ public interface SalaryStandardService {
     void updateSalaryStandard(SalaryStandard salaryStandard);
 
     void registrationSalaryStandard(Integer id);
+
+    SalaryStandard getStandard(int standardId);
+
+
+
+
+
 }

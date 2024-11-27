@@ -12,7 +12,7 @@ public class EmployeeRecord {
     private int age;
     private String educationLevel;
     private String major;
-    private int salaryStandard;
+    private int salaryStandardId;
     private String bank;
     private String accountNumber;
     private String personalHistory;
@@ -45,8 +45,8 @@ public class EmployeeRecord {
     public void setEducationLevel(String educationLevel) { this.educationLevel = educationLevel; }
     public String getMajor() { return major; }
     public void setMajor(String major) { this.major = major; }
-    public int getSalaryStandard() { return salaryStandard; }
-    public void setSalaryStandard(int salaryStandard) { this.salaryStandard = salaryStandard; }
+    public int getSalaryStandardId() { return salaryStandardId; }
+    public void setSalaryStandardId(int salaryStandardId) { this.salaryStandardId = salaryStandardId; }
     public String getBank() { return bank; }
     public void setBank(String bank) { this.bank = bank; }
     public String getAccountNumber() { return accountNumber; }

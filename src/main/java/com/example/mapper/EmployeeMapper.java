@@ -10,10 +10,10 @@ import java.util.List;
 public interface EmployeeMapper {
 
     @Insert("INSERT INTO employee_records (record_id, employee_name, gender, email, mobile, address, age, " +
-            "education_level, major, salary_standard, bank, account_number, personal_history, created_by, created_date, status, " +
+            "education_level, major, salary_standard_id, bank, account_number, personal_history, created_by, created_date, status, " +
             "level_1_id, level_2_id, level_3_id, category_id, position_id, photo_url) " +
             "VALUES (#{recordId}, #{employeeName}, #{gender}, #{email}, #{mobile}, #{address}, #{age}, " +
-            "#{educationLevel}, #{major}, #{salaryStandard}, #{bank}, #{accountNumber}, #{personalHistory}, #{createdBy}, " +
+            "#{educationLevel}, #{major}, #{salaryStandardId}, #{bank}, #{accountNumber}, #{personalHistory}, #{createdBy}, " +
             "#{createdDate}, #{status}, #{level1Id}, #{level2Id}, #{level3Id}, #{categoryId}, #{positionId}, #{photoUrl})")
     void insertEmployee(EmployeeRecord employeeRecord);
 
@@ -22,9 +22,9 @@ public interface EmployeeMapper {
 
     @Update("UPDATE employee_records SET employee_name = #{employeeName}, gender = #{gender}, email = #{email}, " +
             "mobile = #{mobile}, address = #{address}, age = #{age}, education_level = #{educationLevel}, major = #{major}, " +
-            "salary_standard = #{salaryStandard}, bank = #{bank}, account_number = #{accountNumber}, personal_history = #{personalHistory}, " +
+            "salary_standard_id = #{salaryStandardId}, bank = #{bank}, account_number = #{accountNumber}, personal_history = #{personalHistory}, " +
             "level_1_id = #{level1Id}, level_2_id = #{level2Id}, level_3_id = #{level3Id}, category_id = #{categoryId}, position_id = #{positionId}, " +
-            "photo_url = #{photoUrl} WHERE record_id = #{recordId}")
+            "photo_url = #{photoUrl}, status = #{status} WHERE record_id = #{recordId}")
     void updateEmployee(EmployeeRecord employeeRecord);
 
     @Delete("DELETE FROM employee_records WHERE record_id = #{recordId}")
@@ -54,6 +54,14 @@ public interface EmployeeMapper {
                                          @Param("startDate") Date startDate,
                                          @Param("endDate") Date endDate);
 
+//<<<<<<< HEAD
+    @Select("SELECT COUNT(*) FROM employee_records WHERE level_1_id = #{level1Id} AND level_2_id = #{level2Id} AND level_3_id = #{level3Id}")
+    int countByOrganizations(@Param("level1Id") int level1Id, @Param("level2Id") int level2Id, @Param("level3Id") int level3Id);
+
+
+
+
+//=======
     //  统计特定组织下的员工数量
     @Select("SELECT COUNT(*) FROM employee_records WHERE level_1_id = #{level1Id} AND level_2_id = #{level2Id} AND level_3_id = #{level3Id}")
     Integer countEmployeesByLevel(@Param("level1Id") int level1Id,
@@ -70,5 +78,14 @@ public interface EmployeeMapper {
     Double calculateTotalBaseSalary(@Param("level1Id") int level1Id,
                                     @Param("level2Id") int level2Id,
                                     @Param("level3Id") int level3Id);
+//>>>>>>> ca48bc6ac24878be5ebe8e624b2776f9cb3e0292
+
+    // 在EmployeeMapper.java中
+    @Update("UPDATE employee_records SET status = '已删除' WHERE record_id = #{recordId} AND status != '待复核'")
+    void softDeleteEmployee(String recordId);
+
+
+    @Update("UPDATE employee_records SET status = '正常' WHERE record_id = #{recordId} AND status = '已删除'")
+    void restoreEmployee(String recordId);
 
 }

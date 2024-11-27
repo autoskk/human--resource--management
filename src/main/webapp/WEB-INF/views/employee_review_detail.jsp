@@ -1,11 +1,11 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="com.example.pojo.EmployeeRecord" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <html lang="zh">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>人力资源档案变更</title>
+  <title>审核员工档案</title>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <style>
     body {
@@ -122,11 +122,11 @@
 </head>
 <body>
 <a href="${pageContext.request.contextPath}/employee/home">返回主页</a>
-<h1>人力资源档案变更</h1>
+<h1>审核员工档案</h1>
 <%
   EmployeeRecord employeeRecord = (EmployeeRecord) request.getAttribute("employee");
 %>
-<form action="${pageContext.request.contextPath}/employee/update" method="post">
+<form action="${pageContext.request.contextPath}/employee/review" method="post">
 
   <input type="hidden" name="recordId" value="<%= employeeRecord.getRecordId() %>"/>
   <input type="hidden" name="createdBy" value="<%= employeeRecord.getCreatedBy() %>"/>
@@ -137,8 +137,7 @@
   <input type="hidden" name="level3Id" value="<%= employeeRecord.getLevel3Id() %>"/>
   <input type="hidden" name="categoryId" value="<%= employeeRecord.getCategoryId() %>"/>
   <input type="hidden" name="positionId" value="<%= employeeRecord.getPositionId() %>"/>
-<%--  <input type="hidden" name="status" value="<%= employeeRecord.getStatus() %>"/>--%>
-<%--  <input type="hidden" name="salaryStandardId" value="<%= employeeRecord.getSalaryStandardId() %>"/>--%>
+  <%--  <input type="hidden" name="salaryStandardId" value="<%= employeeRecord.getSalaryStandardId() %>"/>--%>
   <input type="hidden" name="photoUrl" value="<%= employeeRecord.getPhotoUrl() %>"/>
 
   <div class="form-group">
@@ -161,11 +160,6 @@
     <span><%= new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(employeeRecord.getCreatedDate()) %></span>
   </div>
 
-<%--  <div class="form-group">--%>
-<%--    <label>一级机构:</label>--%>
-<%--    <span><%= request.getAttribute("level1OrgName") %></span>--%>
-<%--    <input type="hidden" name="level1Id" value="<%= request.getAttribute("level1OrgId") %>">--%>
-<%--  </div>--%>
   <div class="form-group">
     <label>一级机构:</label>
     <span><%= request.getAttribute("level1OrgName") %></span>
@@ -238,7 +232,7 @@
     <div id="photoPreview">
       <img src="" alt="预览照片"/>
     </div>
-    <input type="text" name="photoUrl" id="photoUrl" placeholder="照片URL" value="<%= employeeRecord.getPhotoUrl() %>" readonly/>
+    <input type="text" name="photoUrl" id="photoUrl" placeholder="照片URL" value="<%= employeeRecord.getPhotoUrl() %>"/>
   </div>
 
   <div class="form-group">
@@ -258,11 +252,6 @@
     </select>
   </div>
 
-
-
-
-
-
   <div class="form-group">
     <label for="bank">开户行:</label>
     <input type="text" name="bank" id="bank" value="<%= employeeRecord.getBank() %>" required/>
@@ -278,7 +267,8 @@
     <textarea name="personalHistory" id="personalHistory" rows="5" required><%= employeeRecord.getPersonalHistory() %></textarea>
   </div>
 
-  <input type="submit" value="更新"/>
+
+  <input type="submit" value="提交审核"/>
 </form>
 </body>
 </html>

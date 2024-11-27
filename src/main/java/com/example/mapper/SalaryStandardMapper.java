@@ -59,7 +59,11 @@ public interface SalaryStandardMapper extends BaseMapper<SalaryStandard> {
     // 可以根据需要添加其他自定义查询方法
     // 根据ID进行模糊查询
     @Select("SELECT * FROM salary_standard WHERE salary_standard_id =#{salaryStandardID}")
-   SalaryStandard selectById(Integer salaryStandardID);
+    SalaryStandard selectById(Integer salaryStandardID);
     @Update("UPDATE hrm.salary_standard SET status = '待复核' WHERE salary_standard_id = #{salaryStandardID}")
     void updateStatus(Integer salaryStandardID);
+
+    @Select("SELECT * FROM salary_standard WHERE status = '已复核'")
+    List<SalaryStandard> findApprovedSalaryStandards();
+
 }

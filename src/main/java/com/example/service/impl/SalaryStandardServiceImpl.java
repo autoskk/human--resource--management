@@ -1,6 +1,7 @@
 package com.example.service.impl;
 
 import com.example.mapper.SalaryStandardMapper;
+import com.example.pojo.Position;
 import com.example.pojo.SalaryStandard;
 import com.example.service.SalaryStandardService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -143,5 +144,15 @@ public class SalaryStandardServiceImpl implements SalaryStandardService {
     @Override
     public void registrationSalaryStandard(Integer id){
         salaryStandardMapper.updateStatus(id);
+    }
+
+    @Override
+    public List<SalaryStandard> findApprovedSalaryStandards() {
+        return salaryStandardMapper.findByStatus("已复核");
+    }
+
+
+    public SalaryStandard getStandard(int standardId) {
+        return salaryStandardMapper.selectById(standardId);
     }
 }

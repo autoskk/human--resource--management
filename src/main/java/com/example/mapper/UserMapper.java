@@ -13,6 +13,9 @@ public interface UserMapper extends BaseMapper<User> {
     List<User> selectByRoleId(Integer roleId);
     @Select("SELECT * FROM hrm.users WHERE user_name = #{username}")
     User selectByUsername(String username);
+
+    @Select("SELECT * FROM hrm.users WHERE user_id = #{userid}")
+    User selectByUserid(int userid);
     // 重置用户密码
     @Update("UPDATE hrm.users SET user_password = #{newPassword} WHERE user_name = #{username}")
     void resetUserPassword(@Param("username") String username, @Param("newPassword") String newPassword);

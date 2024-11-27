@@ -16,7 +16,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUserById(Long userId) {
-        return userMapper.selectById(userId);
+        return userMapper.selectByUserid(Math.toIntExact(userId));
     }
 
     @Override

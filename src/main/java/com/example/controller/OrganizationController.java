@@ -3,9 +3,11 @@ package com.example.controller;
 import com.example.pojo.Level1Organization;
 import com.example.pojo.Level2Organization;
 import com.example.pojo.Level3Organization;
+import com.example.pojo.Position;
 import com.example.service.impl.Level1OrganizationService;
 import com.example.service.impl.Level2OrganizationService;
 import com.example.service.impl.Level3OrganizationService;
+import com.example.service.impl.PositionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +26,9 @@ public class OrganizationController {
 
     @Autowired
     private Level3OrganizationService level3OrganizationService; // 添加这一行
+
+    @Autowired
+    private PositionService positionService; // 添加这一行
 
     // 根据一级机构 ID 获取名称
     @GetMapping("/level1/{id}")
@@ -48,7 +53,15 @@ public class OrganizationController {
     @ResponseBody
     public String getLevel3OrganizationName(@PathVariable Integer id) {
         Level3Organization organization = level3OrganizationService.getOrganizationById(id);
-      //  System.out.println(organization);
+        System.out.println(organization);
         return organization != null ? organization.getLevel3Name() : "";
+    }
+
+    @GetMapping("/position/{id}")
+    @ResponseBody
+    public String getPositionName(@PathVariable Integer id) {
+        Position position = positionService.getPosition(id);
+          System.out.println(position);
+        return position != null ? position.getPositionName() : "";
     }
 }
