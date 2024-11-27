@@ -12,16 +12,14 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Table(name = "employee_compensation")
 public class EmployeeCompensation {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer employeeID; // 档案编号
+    @Column(name = "employee_id", length = 20)
+    private String employeeId; // 员工编号
 
-    @Column(nullable = false)
-    private String name; // 姓名
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "salary_standard_id", nullable = false) // 关联的薪酬标准ID
-    private SalaryStandard salaryStandard; // 关联的薪酬标准
+    @Column(name = "salary_standard_id", nullable = false) // 关联的薪酬标准 ID
+    private Integer salaryStandardID; // 关联的薪酬标准
 
     @Column(nullable = false)
     private Double allowances = 0.00; // 补助
@@ -33,7 +31,7 @@ public class EmployeeCompensation {
     private Double deductions = 0.00; // 应扣奖金
 
     @Column(name = "distribution_id") // 关联的薪酬发放单号
-    private Integer distributionID;
+    private Integer distributionId; // 对应的薪酬发放单号
 
     // 计算字段不需要在这里定义，可以通过服务层来计算
     @Transient
@@ -51,5 +49,5 @@ public class EmployeeCompensation {
     @Transient
     private Double housingFund; // 住房公积金，根据基本工资计算
 
-    // Getters and Setters
+    // Getters and Setters 由 Lombok 自动生成
 }

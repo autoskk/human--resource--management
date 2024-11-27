@@ -91,6 +91,17 @@
     </style>
     <script>
         $(document).ready(function() {
+            // 从 sessionStorage 获取当前用户信息
+            const currentUserJson = sessionStorage.getItem('currentUser');
+            if (currentUserJson) {
+                const currentUser = JSON.parse(currentUserJson);
+                // 设置 createdBy 字段为当前用户的用户ID
+                $('#createdBy').val(currentUser.userId); // 或者 currentUser.userId
+            }
+        });
+
+
+        $(document).ready(function() {
             $('#level1Id').change(function() {
                 var level1Id = $(this).val();
                 $.get("/employee/level2", { level1Id: level1Id }, function(data) {
@@ -121,35 +132,24 @@
                     });
                 });
             });
+        });
 
-            // 图片拖放事件
-            var dropZone = $('#photoDropZone');
-            dropZone.on('dragover', function(event) {
-                event.preventDefault();
-                dropZone.addClass('hover');
-            });
-
-            dropZone.on('dragleave', function() {
-                dropZone.removeClass('hover');
-            });
-
-            dropZone.on('drop', function(event) {
-                event.preventDefault();
-                dropZone.removeClass('hover');
-
-                var files = event.originalEvent.dataTransfer.files;
-                if (files.length > 0) {
-                    var file = files[0];
-                    var reader = new FileReader();
+        $(document).ready(function() {
+            $('#photoUpload').change(function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
                     reader.onload = function(e) {
                         $('#photoUrl').val(e.target.result); // 设置照片URL为base64字符串
-                        $('#photoPreview img').attr('src', e.target.result);
-                        $('#photoPreview').show();
+                        $('#photoPreview img').attr('src', e.target.result).show(); // 显示照片预览
                     }
-                    reader.readAsDataURL(file);
+                    reader.readAsDataURL(file); // 读取文件作为数据URL
                 }
             });
         });
+
+
+
     </script>
 </head>
 <body>
@@ -169,6 +169,8 @@
             <option value="女">女</option>
         </select>
     </div>
+
+    <input type="hidden" id="createdBy" name="createdBy" value=""/>
 
     <div class="form-group">
         <label for="email">邮箱:</label>
@@ -240,12 +242,13 @@
         </select>
     </div>
 
-    <div class="photo-container">
-        <div id="photoDropZone">拖放照片至此</div>
+    <div class="form-group">
+        <label for="photoUpload">上传照片:</label>
+        <input type="file" id="photoUpload" name="photoUpload" accept="image/*" required/>
         <div id="photoPreview">
-            <img src="" alt="预览照片"/>
+            <img src="" alt="预览照片" style="display:none;" />
         </div>
-        <label for="photoUrl"></label><input type="text" name="photoUrl" id="photoUrl" placeholder="照片URL" readonly/>
+        <input type="hidden" name="photoUrl" id="photoUrl" /> <!-- 隐藏字段存储照片的 URL -->
     </div>
 
     <div class="form-group">
@@ -253,15 +256,16 @@
         <input type="text" name="major" id="major" required/>
     </div>
 
-<%--    <div class="form-group">--%>
-<%--        <label for="salaryStandardId">薪资标准:</label>--%>
-<%--        <select id="salaryStandardId" name="salaryStandardId" required>--%>
-<%--            <option value="" disabled selected>请选择薪资标准</option>--%>
-<%--            <c:forEach var="standard" items="${salaryStandards}">--%>
-<%--                <option value="${standard.salaryStandardId}">${standard.standardName}</option>--%>
-<%--            </c:forEach>--%>
-<%--        </select>--%>
-<%--    </div>--%>
+    <div class="form-group">
+        <label for="salaryStandardId">薪资标准</label>
+        <select name="salaryStandardId" id="salaryStandardId" required>
+            <option value="" disabled selected>请选择薪资标准</option>
+            <c:forEach var="salaryStandard" items="${salaryStandards}">
+                <option value="${salaryStandard.salaryStandardID}">${salaryStandard.standardName}</option>
+            </c:forEach>
+        </select>
+    </div>
+
 
 
     <div class="form-group">

@@ -27,7 +27,7 @@
       const newPassword = $('#newPassword').val();
 
       $.ajax({
-        url: '/api/users/reset-password',
+        url: '/users/reset-password',
         type: 'POST',
         data: {
           username: username,

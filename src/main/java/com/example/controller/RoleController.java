@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/roles") // 设定统一的请求路径
+@RequestMapping("/roles") // 设定统一的请求路径
 public class RoleController {
 
     @Autowired
@@ -49,7 +49,7 @@ public class RoleController {
 
     @PutMapping("/{roleId}") // 更新角色
     public ResponseEntity<Role> updateRole(@PathVariable Long roleId, @RequestBody Role role) {
-        role.setRoleID(Math.toIntExact(roleId)); // 确保更新时 ID 一致
+        role.setRoleId(Math.toIntExact(roleId)); // 确保更新时 ID 一致
         roleService.updateRole(role);
         return ResponseEntity.ok(role); // 返回 200 OK
     }

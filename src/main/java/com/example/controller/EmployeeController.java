@@ -1,13 +1,18 @@
 package com.example.controller;
 
 import com.example.pojo.*;
+import com.example.service.SalaryStandardService;
+import com.example.service.UserService;
 import com.example.service.impl.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -35,7 +40,10 @@ public class EmployeeController {
     private PositionService positionService; // 添加这一行
 
     @Autowired
-    private SalaryStandardServiceImpl salaryStandardService; // 添加这一行
+    private SalaryStandardService salaryStandardService; // 添加这一行
+
+    @Autowired
+    private UserService userService; // 添加这一行
 
     // 主页
     @GetMapping("/")
@@ -54,16 +62,23 @@ public class EmployeeController {
     public String showRegistrationForm(Model model) {
         model.addAttribute("level1Organizations", level1OrganizationService.getAllLevel1Organizations());
         model.addAttribute("positionCategories", positionCategoryService.getAllPositionCategories());
-        model.addAttribute("salaryStandards", salaryStandardService.getAllSalaryStandardsById()); // 省略的服务调用
+        model.addAttribute("salaryStandards", salaryStandardService.findApprovedSalaryStandards());
         return "employee_register";
     }
 
 
     @PostMapping("/register")
-    public String registerEmployee(@ModelAttribute EmployeeRecord employeeRecord) {
+    public String registerEmployee(@ModelAttribute EmployeeRecord employeeRecord,
+                                   @RequestParam("photoUrl") String photoUrl) {
+        // 这里可以进行进一步处理，例如处理上传的 Base64 数据
+        employeeRecord.setPhotoUrl(photoUrl); // 设置 photoUrl
         employeeService.addEmployee(employeeRecord);
+        System.out.println(employeeRecord);
         return "redirect:/employee/list"; // 提交后重定向到员工列表
     }
+
+
+
 
 
 
@@ -79,6 +94,9 @@ public class EmployeeController {
                                 Model model) {
         List<EmployeeRecord> employees = employeeService.searchEmployees(level1Id, level2Id, level3Id,
                 categoryId, positionId, startDate, endDate);
+
+
+
 
         model.addAttribute("level1Organizations", level1OrganizationService.getAllLevel1Organizations());
         model.addAttribute("positionCategories", positionCategoryService.getAllPositionCategories());
@@ -98,10 +116,18 @@ public class EmployeeController {
     }
 
 
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        dateFormat.setLenient(false); // 不允许不严格的日期格式
+        binder.registerCustomEditor(Date.class, "createdDate", new CustomDateEditor(dateFormat, true));
+    }
+
     // 人力资源档案变更
     @GetMapping("/update")
     public String showUpdateForm(@RequestParam String recordId, Model model) {
         EmployeeRecord employee = employeeService.getEmployee(recordId);
+
 
         model.addAttribute("employee", employee);
 
@@ -111,21 +137,46 @@ public class EmployeeController {
         Level3Organization level3Org = level3OrganizationService.getLevel3Organization(employee.getLevel3Id());
         PositionCategory category = positionCategoryService.getPositionCategory(employee.getCategoryId());
         Position position = positionService.getPosition(employee.getPositionId());
+        User user = userService.getUserById((long) employee.getCreatedBy());
+        SalaryStandard salaryStandard =  salaryStandardService.getStandard(employee.getSalaryStandardId());
 
+
+        model.addAttribute("standardName", salaryStandard != null ? salaryStandard.getStandardName() : "未找到");
         model.addAttribute("level1OrgName", level1Org != null ? level1Org.getLevel1Name() : "未找到");
+//        model.addAttribute("level1OrgId", employee.getLevel1Id());
         model.addAttribute("level2OrgName", level2Org != null ? level2Org.getLevel2Name() : "未找到");
         model.addAttribute("level3OrgName", level3Org != null ? level3Org.getLevel3Name() : "未找到");
         model.addAttribute("categoryName", category != null ? category.getCategoryName() : "未找到");
         model.addAttribute("positionName", position != null ? position.getPositionName() : "未找到");
+        model.addAttribute("userName", user != null ? user.getUserName() : "未找到");
+        model.addAttribute("standardName", salaryStandard != null ? salaryStandard.getStandardName() : "未找到");
+        model.addAttribute("salaryStandards", salaryStandardService.findApprovedSalaryStandards());
+
 
         return "employee_update";  // 返回更新页面
     }
 
     @PostMapping("/update")
     public String updateEmployee(@ModelAttribute EmployeeRecord employeeRecord) {
+
+
+        // 验证传入的组织层次ID是否有效
+        if (level1OrganizationService.getLevel1Organization(employeeRecord.getLevel1Id()) == null) {
+            throw new IllegalArgumentException("一级机构不存在");
+        }
+        if (level2OrganizationService.getLevel2Organization(employeeRecord.getLevel2Id()) == null) {
+            throw new IllegalArgumentException("二级机构不存在");
+        }
+        if (level3OrganizationService.getLevel3Organization(employeeRecord.getLevel3Id()) == null) {
+            throw new IllegalArgumentException("三级机构不存在");
+        }
+
+        employeeRecord.setStatus(employeeRecord.getStatus());
         employeeService.editEmployee(employeeRecord);
+        System.out.println(employeeRecord);
         return "redirect:/employee/list"; // 更新后重定向到员工列表
     }
+
 
 
     // 人力资源档案复核
@@ -142,6 +193,7 @@ public class EmployeeController {
     public String showReviewForm(@PathVariable String recordId, Model model) {
         EmployeeRecord employee = employeeService.getEmployee(recordId);
 
+
         model.addAttribute("employee", employee);
 
         // 通过id获取名称，直接传递中文名称给JSP
@@ -150,12 +202,20 @@ public class EmployeeController {
         Level3Organization level3Org = level3OrganizationService.getLevel3Organization(employee.getLevel3Id());
         PositionCategory category = positionCategoryService.getPositionCategory(employee.getCategoryId());
         Position position = positionService.getPosition(employee.getPositionId());
+        User user = userService.getUserById((long) employee.getCreatedBy());
+        SalaryStandard salaryStandard =  salaryStandardService.getStandard(employee.getSalaryStandardId());
 
+
+        model.addAttribute("standardName", salaryStandard != null ? salaryStandard.getStandardName() : "未找到");
         model.addAttribute("level1OrgName", level1Org != null ? level1Org.getLevel1Name() : "未找到");
+//        model.addAttribute("level1OrgId", employee.getLevel1Id());
         model.addAttribute("level2OrgName", level2Org != null ? level2Org.getLevel2Name() : "未找到");
         model.addAttribute("level3OrgName", level3Org != null ? level3Org.getLevel3Name() : "未找到");
         model.addAttribute("categoryName", category != null ? category.getCategoryName() : "未找到");
         model.addAttribute("positionName", position != null ? position.getPositionName() : "未找到");
+        model.addAttribute("userName", user != null ? user.getUserName() : "未找到");
+        model.addAttribute("standardName", salaryStandard != null ? salaryStandard.getStandardName() : "未找到");
+        model.addAttribute("salaryStandards", salaryStandardService.findApprovedSalaryStandards());
 
 
         return "employee_review_detail"; // 返回复核详细页面
@@ -163,16 +223,9 @@ public class EmployeeController {
 
     // 处理复核操作
     @PostMapping("/review")
-    public String processReview(@RequestParam String recordId, @RequestParam boolean approve) {
-        EmployeeRecord employee = employeeService.getEmployee(recordId);
-        employee.setStatus("已复核"); // 将状态修改为已复核
-
-        // 这里可以加入额外的条件逻辑，保存审核的决定
-        if (!approve) {
-            // 处理拒绝逻辑，例如记录原因等
-        }
-
-        employeeService.editEmployee(employee); // 保存修改
+    public String processReview(@ModelAttribute EmployeeRecord employeeRecord) {
+        employeeRecord.setStatus("正常"); // 将状态修改为正常
+        employeeService.editEmployee(employeeRecord); // 保存修改
         return "redirect:/employee/review"; // 复核后重定向到复核列表
     }
 

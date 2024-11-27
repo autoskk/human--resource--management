@@ -98,8 +98,8 @@
 <a href="${pageContext.request.contextPath}/employee/home">返回主页</a>
 <h1>员工列表</h1>
 
-<form action="/employee/list" method="get">
-    <label for="queryLevel1Id">所属机构:</label>
+<form action="${pageContext.request.contextPath}/employee/list" method="get">
+    <label for="queryLevel1Id">一级机构:</label>
     <select id="queryLevel1Id" name="level1Id">
         <option value="" disabled selected>请选择一级机构</option>
         <c:forEach var="level1" items="${level1Organizations}">

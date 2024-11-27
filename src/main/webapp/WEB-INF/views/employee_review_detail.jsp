@@ -129,6 +129,16 @@
 <form action="${pageContext.request.contextPath}/employee/review" method="post">
 
   <input type="hidden" name="recordId" value="<%= employeeRecord.getRecordId() %>"/>
+  <input type="hidden" name="createdBy" value="<%= employeeRecord.getCreatedBy() %>"/>
+  <input type="hidden" name="createdDate" value="<%= new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(employeeRecord.getCreatedDate()) %>"/>
+  <input type="hidden" name="status" value="<%= employeeRecord.getStatus() %>"/>
+  <input type="hidden" name="level1Id" value="<%= employeeRecord.getLevel1Id() %>"/>
+  <input type="hidden" name="level2Id" value="<%= employeeRecord.getLevel2Id() %>"/>
+  <input type="hidden" name="level3Id" value="<%= employeeRecord.getLevel3Id() %>"/>
+  <input type="hidden" name="categoryId" value="<%= employeeRecord.getCategoryId() %>"/>
+  <input type="hidden" name="positionId" value="<%= employeeRecord.getPositionId() %>"/>
+  <%--  <input type="hidden" name="salaryStandardId" value="<%= employeeRecord.getSalaryStandardId() %>"/>--%>
+  <input type="hidden" name="photoUrl" value="<%= employeeRecord.getPhotoUrl() %>"/>
 
   <div class="form-group">
     <label>档案编号:</label>
@@ -142,7 +152,7 @@
 
   <div class="form-group">
     <label>登记人:</label>
-    <span><%= employeeRecord.getCreatedBy() %></span>
+    <span><%= request.getAttribute("userName") %></span>
   </div>
 
   <div class="form-group">
@@ -177,12 +187,12 @@
 
   <div class="form-group">
     <label for="employeeName">姓名:</label>
-    <input type="text" name="employeeName" id="employeeName" value="<%= employeeRecord.getEmployeeName() %>" required readonly/>
+    <input type="text" name="employeeName" id="employeeName" value="<%= employeeRecord.getEmployeeName() %>" required/>
   </div>
 
   <div class="form-group">
     <label for="gender">性别:</label>
-    <select name="gender" id="gender" required disabled>
+    <select name="gender" id="gender" required>
       <option value="男" <%= "男".equals(employeeRecord.getGender()) ? "selected" : "" %>>男</option>
       <option value="女" <%= "女".equals(employeeRecord.getGender()) ? "selected" : "" %>>女</option>
     </select>
@@ -190,27 +200,27 @@
 
   <div class="form-group">
     <label for="email">邮箱:</label>
-    <input type="email" name="email" id="email" value="<%= employeeRecord.getEmail() %>" required readonly/>
+    <input type="email" name="email" id="email" value="<%= employeeRecord.getEmail() %>" required/>
   </div>
 
   <div class="form-group">
     <label for="mobile">电话:</label>
-    <input type="tel" name="mobile" id="mobile" value="<%= employeeRecord.getMobile() %>" required readonly/>
+    <input type="tel" name="mobile" id="mobile" value="<%= employeeRecord.getMobile() %>" required/>
   </div>
 
   <div class="form-group">
     <label for="address">地址:</label>
-    <input type="text" name="address" id="address" value="<%= employeeRecord.getAddress() %>" required readonly/>
+    <input type="text" name="address" id="address" value="<%= employeeRecord.getAddress() %>" required/>
   </div>
 
   <div class="form-group">
     <label for="age">年龄:</label>
-    <input type="number" name="age" id="age" value="<%= employeeRecord.getAge() %>" required readonly/>
+    <input type="number" name="age" id="age" value="<%= employeeRecord.getAge() %>" required/>
   </div>
 
   <div class="form-group">
     <label for="educationLevel">学历:</label>
-    <select name="educationLevel" id="educationLevel" required disabled>
+    <select name="educationLevel" id="educationLevel" required>
       <option value="本科" <%= "本科".equals(employeeRecord.getEducationLevel()) ? "selected" : "" %>>本科</option>
       <option value="硕士" <%= "硕士".equals(employeeRecord.getEducationLevel()) ? "selected" : "" %>>硕士</option>
       <option value="博士" <%= "博士".equals(employeeRecord.getEducationLevel()) ? "selected" : "" %>>博士</option>
@@ -222,34 +232,41 @@
     <div id="photoPreview">
       <img src="" alt="预览照片"/>
     </div>
-    <input type="text" name="photoUrl" id="photoUrl" placeholder="照片URL" value="<%= employeeRecord.getPhotoUrl() %>" readonly/>
+    <input type="text" name="photoUrl" id="photoUrl" placeholder="照片URL" value="<%= employeeRecord.getPhotoUrl() %>"/>
   </div>
 
   <div class="form-group">
     <label for="major">专业:</label>
-    <input type="text" name="major" id="major" value="<%= employeeRecord.getMajor() %>" required readonly/>
+    <input type="text" name="major" id="major" value="<%= employeeRecord.getMajor() %>" required/>
+  </div>
+
+  <div class="form-group">
+    <label for="salaryStandardId">薪资标准</label>
+    <select name="salaryStandardId" id="salaryStandardId">
+      <option value="" disabled selected>${requestScope.standardName}</option>
+      <c:forEach var="salaryStandard" items="${salaryStandards}">
+        <option value="${salaryStandard.salaryStandardID}"
+                <c:if test="${salaryStandard.salaryStandardID == employee.salaryStandardId}">selected</c:if>
+        >${salaryStandard.standardName}</option>
+      </c:forEach>
+    </select>
   </div>
 
   <div class="form-group">
     <label for="bank">开户行:</label>
-    <input type="text" name="bank" id="bank" value="<%= employeeRecord.getBank() %>" required readonly/>
+    <input type="text" name="bank" id="bank" value="<%= employeeRecord.getBank() %>" required/>
   </div>
 
   <div class="form-group">
     <label for="accountNumber">银行账户:</label>
-    <input type="text" name="accountNumber" id="accountNumber" value="<%= employeeRecord.getAccountNumber() %>" required readonly/>
+    <input type="text" name="accountNumber" id="accountNumber" value="<%= employeeRecord.getAccountNumber() %>" required/>
   </div>
 
   <div class="form-group">
     <label for="personalHistory">个人履历:</label>
-    <textarea name="personalHistory" id="personalHistory" rows="5" required readonly><%= employeeRecord.getPersonalHistory() %></textarea>
+    <textarea name="personalHistory" id="personalHistory" rows="5" required><%= employeeRecord.getPersonalHistory() %></textarea>
   </div>
 
-  <div class="form-group">
-    <label>审核结果:</label>
-    <label><input type="radio" name="approve" value="true" required> 通过</label>
-    <label><input type="radio" name="approve" value="false" required> 拒绝</label>
-  </div>
 
   <input type="submit" value="提交审核"/>
 </form>

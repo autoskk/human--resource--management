@@ -129,6 +129,17 @@
 <form action="${pageContext.request.contextPath}/employee/update" method="post">
 
   <input type="hidden" name="recordId" value="<%= employeeRecord.getRecordId() %>"/>
+  <input type="hidden" name="createdBy" value="<%= employeeRecord.getCreatedBy() %>"/>
+  <input type="hidden" name="createdDate" value="<%= new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(employeeRecord.getCreatedDate()) %>"/>
+  <input type="hidden" name="status" value="<%= employeeRecord.getStatus() %>"/>
+  <input type="hidden" name="level1Id" value="<%= employeeRecord.getLevel1Id() %>"/>
+  <input type="hidden" name="level2Id" value="<%= employeeRecord.getLevel2Id() %>"/>
+  <input type="hidden" name="level3Id" value="<%= employeeRecord.getLevel3Id() %>"/>
+  <input type="hidden" name="categoryId" value="<%= employeeRecord.getCategoryId() %>"/>
+  <input type="hidden" name="positionId" value="<%= employeeRecord.getPositionId() %>"/>
+<%--  <input type="hidden" name="status" value="<%= employeeRecord.getStatus() %>"/>--%>
+<%--  <input type="hidden" name="salaryStandardId" value="<%= employeeRecord.getSalaryStandardId() %>"/>--%>
+  <input type="hidden" name="photoUrl" value="<%= employeeRecord.getPhotoUrl() %>"/>
 
   <div class="form-group">
     <label>档案编号:</label>
@@ -142,7 +153,7 @@
 
   <div class="form-group">
     <label>登记人:</label>
-    <span><%= employeeRecord.getCreatedBy() %></span>
+    <span><%= request.getAttribute("userName") %></span>
   </div>
 
   <div class="form-group">
@@ -150,6 +161,11 @@
     <span><%= new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(employeeRecord.getCreatedDate()) %></span>
   </div>
 
+<%--  <div class="form-group">--%>
+<%--    <label>一级机构:</label>--%>
+<%--    <span><%= request.getAttribute("level1OrgName") %></span>--%>
+<%--    <input type="hidden" name="level1Id" value="<%= request.getAttribute("level1OrgId") %>">--%>
+<%--  </div>--%>
   <div class="form-group">
     <label>一级机构:</label>
     <span><%= request.getAttribute("level1OrgName") %></span>
@@ -230,15 +246,22 @@
     <input type="text" name="major" id="major" value="<%= employeeRecord.getMajor() %>" required/>
   </div>
 
-<%--  <div class="form-group">--%>
-<%--    <label for="salaryStandardId">薪资标准:</label>--%>
-<%--    <select id="salaryStandardId" name="salaryStandardId" required>--%>
-<%--      <option value="" disabled selected>请选择薪资标准</option>--%>
-<%--      <c:forEach var="standard" items="${salaryStandards}">--%>
-<%--        <option value="${standard.salaryStandardId}" <%= employeeRecord.getSalaryStandardId().equals(standard.getSalaryStandardId()) ? "selected" : "" %>>${standard.standardName}</option>--%>
-<%--      </c:forEach>--%>
-<%--    </select>--%>
-<%--  </div>--%>
+  <div class="form-group">
+    <label for="salaryStandardId">薪资标准</label>
+    <select name="salaryStandardId" id="salaryStandardId">
+      <option value="" disabled selected>${requestScope.standardName}</option>
+      <c:forEach var="salaryStandard" items="${salaryStandards}">
+        <option value="${salaryStandard.salaryStandardID}"
+                <c:if test="${salaryStandard.salaryStandardID == employee.salaryStandardId}">selected</c:if>
+        >${salaryStandard.standardName}</option>
+      </c:forEach>
+    </select>
+  </div>
+
+
+
+
+
 
   <div class="form-group">
     <label for="bank">开户行:</label>

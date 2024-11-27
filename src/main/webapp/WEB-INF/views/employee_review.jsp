@@ -51,7 +51,11 @@
     <th>姓名</th>
     <th>性别</th>
     <th>状态</th>
-    <th>操作</th>
+    <th>一级机构</th>
+    <th>二级机构</th>
+    <th>三级机构</th>
+    <th>职位名称</th>
+
   </tr>
   </thead>
   <tbody>

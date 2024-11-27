@@ -15,23 +15,13 @@ public class EmployeeCompensationServiceImpl implements EmployeeCompensationServ
     private EmployeeCompensationMapper employeeCompensationMapper;
 
     @Override
-    public EmployeeCompensation getEmployeeCompensationById(Integer employeeId) {
+    public void saveEmployeeCompensation(EmployeeCompensation employeeCompensation) {
+        employeeCompensationMapper.insertEmployeeCompensation(employeeCompensation);
+    }
+
+    @Override
+    public EmployeeCompensation getEmployeeCompensationById(String employeeId) {
         return employeeCompensationMapper.selectById(employeeId);
-    }
-
-    @Override
-    public EmployeeCompensation getEmployeeCompensationByName(String name) {
-        return employeeCompensationMapper.selectByName(name);
-    }
-
-    @Override
-    public List<EmployeeCompensation> getAllEmployeeCompensations() {
-        return employeeCompensationMapper.selectList(null); // 查询所有员工薪酬
-    }
-
-    @Override
-    public void addEmployeeCompensation(EmployeeCompensation employeeCompensation) {
-        employeeCompensationMapper.insert(employeeCompensation);
     }
 
     @Override
@@ -40,7 +30,19 @@ public class EmployeeCompensationServiceImpl implements EmployeeCompensationServ
     }
 
     @Override
-    public void deleteEmployeeCompensation(Integer employeeId) {
+    public void deleteEmployeeCompensation(String employeeId) {
         employeeCompensationMapper.deleteById(employeeId);
     }
+
+    @Override
+    public List<EmployeeCompensation> getAllEmployeeCompensations() {
+        return employeeCompensationMapper.selectAll();
+    }
+
+    @Override
+    public List<EmployeeCompensation> getDistributionEmployeeCompensations(Integer distributionId) {
+        return employeeCompensationMapper.selectByDistributionId(distributionId);
+    }
+
+
 }

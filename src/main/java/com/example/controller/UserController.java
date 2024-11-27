@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/users") // 设定统一的请求路径
+@RequestMapping("/users") // 设定统一的请求路径
 public class UserController {
 
     @Autowired
@@ -18,6 +18,16 @@ public class UserController {
     @GetMapping("/{id}") // 根据用户 ID 获取用户
     public ResponseEntity<User> getUserById(@PathVariable Long id) {
         User user = userService.getUserById(id);
+        if (user != null) {
+            return ResponseEntity.ok(user); // 返回 200 OK
+        } else {
+            return ResponseEntity.notFound().build(); // 返回 404 Not Found
+        }
+    }
+
+    @GetMapping("/roleId/{roleId}") // 根据用户名获取用户
+    public ResponseEntity<List<User>> selectByRoleId(@PathVariable Integer roleId) {
+        List<User> user = userService.selectByRoleId(roleId);
         if (user != null) {
             return ResponseEntity.ok(user); // 返回 200 OK
         } else {
@@ -50,7 +60,7 @@ public class UserController {
 
     @PutMapping("/{id}") // 更新用户信息
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
-        user.setUserID(Math.toIntExact(id)); // 确保更新时 ID 一致
+        user.setUserId(Math.toIntExact(id)); // 确保更新时 ID 一致
         userService.updateUser(user);
         return ResponseEntity.ok(user); // 返回 200 OK
     }

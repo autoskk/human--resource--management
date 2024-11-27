@@ -14,7 +14,7 @@ import javax.persistence.*;
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer roleID; // 角色ID
+    private Integer roleId; // 角色ID
 
     @Column(unique = true, nullable = false)
     private String roleName; // 角色名称
