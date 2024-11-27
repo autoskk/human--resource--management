@@ -24,8 +24,8 @@ public class EmployeeCompensationController {
     }
 
     @GetMapping("/{employeeId}")
-    public ResponseEntity<EmployeeCompensation> getEmployeeCompensation(@PathVariable String employeeId) {
-        EmployeeCompensation employeeCompensation = employeeCompensationService.getEmployeeCompensationById(employeeId);
+    public ResponseEntity<EmployeeCompensation> getEmployeeCompensation(@PathVariable String employeeId,@RequestParam  Integer distributionId) {
+        EmployeeCompensation employeeCompensation = employeeCompensationService.getEmployeeCompensationById(employeeId,distributionId);
         return employeeCompensation != null ? ResponseEntity.ok(employeeCompensation) : ResponseEntity.notFound().build();
     }
 

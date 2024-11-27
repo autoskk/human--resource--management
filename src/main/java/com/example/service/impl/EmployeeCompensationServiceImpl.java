@@ -20,8 +20,8 @@ public class EmployeeCompensationServiceImpl implements EmployeeCompensationServ
     }
 
     @Override
-    public EmployeeCompensation getEmployeeCompensationById(String employeeId) {
-        return employeeCompensationMapper.selectById(employeeId);
+    public EmployeeCompensation getEmployeeCompensationById(String employeeId,Integer distributionId) {
+        return employeeCompensationMapper.selectByEmployeeIdAndDistributionId(employeeId,distributionId);
     }
 
     @Override

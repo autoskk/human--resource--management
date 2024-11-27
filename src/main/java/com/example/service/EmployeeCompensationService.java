@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface EmployeeCompensationService {
     void saveEmployeeCompensation(EmployeeCompensation employeeCompensation);
-    EmployeeCompensation getEmployeeCompensationById(String employeeId);
+    EmployeeCompensation getEmployeeCompensationById(String employeeId,Integer distributionId);
     void updateEmployeeCompensation(EmployeeCompensation employeeCompensation);
     void deleteEmployeeCompensation(String employeeId,Integer distributionId);
 

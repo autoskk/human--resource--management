@@ -514,15 +514,53 @@
         }
     }
 
-    function editEmployeeCompensation(){
+    function editEmployeeCompensation(employeeId) {
         const distributionID = $('input[name="distributionID"]').val();
         $('input[name="distributionId"]').val(distributionID);
 
+        // 根据员工ID获取薪酬信息
+        fetch('/employees/compensation/' + employeeId) // 假设这个 API 能获取特定员工的薪酬信息
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('获取员工薪酬信息失败');
+                }
+                return response.json();
+            })
+            .then(compensation => {
 
-        // Set the distribution ID in the modal
-        loadSalaryStandards();  // Load salary standards
-        $('#employeeCompensationModal').fadeIn();  // Show modal
+                loadSalaryStandards()
+                // 填充模态框的输入字段
+                $('input[name="employeeId"]').val(compensation.employeeId);
+                $('input[name="salaryStandardId"]').val(compensation.salaryStandardId);
+
+                // 获取薪酬标准
+                return fetch('/salary-standards/getStandard/' + compensation.salaryStandardId);
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('获取薪水标准失败');
+                }
+                return response.json();
+            })
+            .then(salaryStandard => {
+                // 使用薪酬标准填充数据
+                $('input[name="baseSalary"]').val(salaryStandard.baseSalary);
+                $('input[name="pensionInsurance"]').val(salaryStandard.pensionInsurance || '0.00');
+                $('input[name="medicalInsurance"]').val(salaryStandard.medicalInsurance || '0.00');
+                $('input[name="unemploymentInsurance"]').val(salaryStandard.unemploymentInsurance || '0.00');
+                $('input[name="housingFund"]').val(salaryStandard.housingFund || '0.00');
+
+                // 填充其他补充信息
+                $('input[name="allowances"]').val(compensation.allowances || '0.00');
+                $('input[name="bonus"]').val(compensation.bonus || '0.00');
+                $('input[name="deductions"]').val(compensation.deductions || '0.00');
+
+                // 显示模态框
+                $('#employeeCompensationModal').fadeIn();
+            })
+            .catch(error => alert('加载员工薪酬信息失败: ' + error.message));
     }
+
 
     function showEmployeeCompensationForm() {
         const distributionID = $('input[name="distributionID"]').val();

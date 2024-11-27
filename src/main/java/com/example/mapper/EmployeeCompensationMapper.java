@@ -19,6 +19,9 @@ public interface EmployeeCompensationMapper extends BaseMapper<EmployeeCompensat
     @Select("SELECT * FROM employee_compensation WHERE employee_id = #{employeeId}")
     EmployeeCompensation selectByEmployeeId(@Param("employeeId") String employeeId);
 
+    @Select("Select * FROM employee_compensation WHERE employee_id = #{employeeId} AND distribution_id = #{distributionId}")
+    EmployeeCompensation selectByEmployeeIdAndDistributionId(@Param("employeeId") String employeeId , @Param("distributionId")Integer distributionId);
+
     // 查询所有员工薪酬信息
     @Select("SELECT * FROM employee_compensation")
     List<EmployeeCompensation> selectAll();
