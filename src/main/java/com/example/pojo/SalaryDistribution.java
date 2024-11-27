@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Data
@@ -37,6 +38,10 @@ public class SalaryDistribution {
 
     @Column(nullable = false)
     private String registrar; // 登记人
+
+    @Column(name = "registration_time", nullable = false) // 映射成数据库字段
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date registrationTime; // 登记时间
 
 
 }

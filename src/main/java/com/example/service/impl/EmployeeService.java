@@ -42,4 +42,16 @@ public class EmployeeService {
                                                 Date startDate, Date endDate) {
         return employeeMapper.searchEmployees(level1Id, level2Id, level3Id, categoryId, positionId, startDate, endDate);
     }
+
+    // 添加新的方法到 EmployeeService
+    public Integer countEmployeesByLevel(int level1Id, int level2Id, int level3Id) {
+        // 查询数据库返回符合条件的员工数量
+        return employeeMapper.countEmployeesByLevel(level1Id, level2Id, level3Id);
+    }
+
+    public Double calculateTotalBaseSalary(int level1Id, int level2Id, int level3Id) {
+        // 查询数据库返回符合条件的员工总薪酬
+        return employeeMapper.calculateTotalBaseSalary(level1Id, level2Id, level3Id);
+    }
+
 }

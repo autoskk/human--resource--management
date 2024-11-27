@@ -21,16 +21,16 @@
   <input type="text" id="searchDistributionID" placeholder="请输入发放单编号" />
   <button class="btn" id="searchDistribution">查询</button>
   <button class="btn" id="createDistribution">创建薪酬发放单</button>
-  <button type="button" class="btn" onclick="window.location.href='salaryManagement'">返回</button>
+  <button type="button" class="btn" onclick="window.location.href='/salaryManagement'">返回</button>
 </div>
 
 <table>
   <thead>
   <tr>
     <th>发放单编号</th>
-    <th>一级机构 ID</th>
-    <th>二级机构 ID</th>
-    <th>三级机构 ID</th>
+    <th>一级机构名称</th>
+    <th>二级机构名称</th>
+    <th>三级机构名称</th>
     <th>人数</th>
     <th>基本薪酬总额</th>
     <th>状态</th>
@@ -40,11 +40,11 @@
   <tbody id="distributionsTableBody">
   <c:if test="${not empty salaryDistribution}">
     <c:forEach var="distribution" items="${salaryDistribution}">
-      <tr>
+      <tr class="distribution-row">
         <td>${distribution.distributionID}</td>
-        <td>${distribution.levelOneId}</td>
-        <td>${distribution.levelTwoId}</td>
-        <td>${distribution.levelThreeId}</td>
+        <td class="level-one-id">${distribution.levelOneId}</td>
+        <td class="level-two-id">${distribution.levelTwoId}</td>
+        <td class="level-three-id">${distribution.levelThreeId}</td>
         <td>${distribution.numberOfEmployees}</td>
         <td>${distribution.totalBaseSalary}</td>
         <td>${distribution.status}</td>
@@ -68,6 +68,35 @@
 <script>
   $(document).ready(function() {
 
+    // 当页面加载时，为每一行的机构 ID 查询对应的名称
+    $('tr.distribution-row').each(function() {
+      let levelOneId = $(this).find('.level-one-id').text().trim();
+      let levelTwoId = $(this).find('.level-two-id').text().trim();
+      let levelThreeId = $(this).find('.level-three-id').text().trim();
+
+      // 查询一级机构名称
+      if (levelOneId) {
+        $.get('/organizations/level1/' + levelOneId, function(data) {
+          $(this).find('.level-one-id').text(data);
+        }.bind(this));
+      }
+
+      // 查询二级机构名称
+      if (levelTwoId) {
+        $.get('/organizations/level2/' + levelTwoId, function(data) {
+          $(this).find('.level-two-id').text(data);
+        }.bind(this));
+      }
+
+      // 查询三级机构名称
+      if (levelThreeId) {
+        $.get('/organizations/level3/' + levelThreeId, function(data) {
+          $(this).find('.level-three-id').text(data);
+        }.bind(this));
+      }
+
+    });
+
     $('#searchDistribution').click(function() {
       loadSalaryDistributions($('#searchDistributionID').val());
     });
@@ -81,21 +110,21 @@
     window.location.href = '/salary-distributions/' + distributionID; // 跳转到编辑页面
   }
 
-  function editDistribution(id) {
-    window.location.href = '/salary-distributions/' + id; // 跳转到编辑页面
+  function editDistribution(distributionID) {
+    window.location.href = '/salary-distributions/' + distributionID; // 跳转到编辑页面
   }
 
-  function reviewDistribution(id) {
-    window.location.href = '/salary-distributions/review/' + id; // 跳转到复核页面
+  function reviewDistribution(distributionID) {
+    window.location.href = '/salary-distributions/review/' + distributionID; // 跳转到复核页面
   }
 
-  function deleteDistribution(id) {
+  function deleteDistribution(distributionID) {
     if (confirm('确定要删除该薪资发放单吗？')) {
-      fetch('/salary-distributions/' + id, { method: 'DELETE' })
+      fetch('/salary-distributions/' + distributionID, { method: 'DELETE' })
               .then(response => response.text())
               .then(data => {
                 alert(data);
-                loadSalaryDistributions(); // 重新加载数据
+                window.location.href = '/salary-distributions';
               })
               .catch(error => alert('删除失败: ' + error));
     }

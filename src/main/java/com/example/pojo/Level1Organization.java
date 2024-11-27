@@ -1,5 +1,8 @@
 package com.example.pojo;
 
+import lombok.Data;
+
+@Data
 public class Level1Organization {
     private int level1Id;
     private String level1Name;

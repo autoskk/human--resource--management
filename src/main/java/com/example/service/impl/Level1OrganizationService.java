@@ -31,4 +31,8 @@ public class Level1OrganizationService {
     public List<Level1Organization> getAllLevel1Organizations() {
         return level1OrganizationMapper.findAll();
     }
+
+    public Level1Organization getOrganizationById(Integer id) {
+        return level1OrganizationMapper.findById(id);
+    }
 }

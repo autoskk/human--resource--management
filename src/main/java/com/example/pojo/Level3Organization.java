@@ -1,5 +1,8 @@
 package com.example.pojo;
 
+import lombok.Data;
+
+@Data
 public class Level3Organization {
     private int level3Id;
     private int level2Id;      // 二级机构ID

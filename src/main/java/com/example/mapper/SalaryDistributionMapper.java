@@ -14,8 +14,8 @@ public interface SalaryDistributionMapper extends BaseMapper<SalaryDistribution>
     List<SalaryDistribution> selectPendingDistributions();
 
     // 插入新的薪酬发放记录
-    @Insert("INSERT INTO hrm.salary_distribution (distribution_id,level_1_id, level_2_id, level_3_id, number_of_employees, total_base_salary, status, registrar) " +
-            "VALUES (#{distributionID},#{levelOneId}, #{levelTwoId}, #{levelThreeId}, #{numberOfEmployees}, #{totalBaseSalary}, #{status}, #{registrar})")
+    @Insert("INSERT INTO hrm.salary_distribution (distribution_id, level_1_id, level_2_id, level_3_id, number_of_employees, total_base_salary, status, registrar, registration_time) " +
+            "VALUES (#{distributionID}, #{levelOneId}, #{levelTwoId}, #{levelThreeId}, #{numberOfEmployees}, #{totalBaseSalary}, #{status}, #{registrar}, #{registrationTime})")
     int insertSalaryDistribution(SalaryDistribution salaryDistribution);
 
     // 根据 ID 模糊查询薪酬发放记录
@@ -28,7 +28,7 @@ public interface SalaryDistributionMapper extends BaseMapper<SalaryDistribution>
     // 更新薪酬发放记录
     @Update("UPDATE hrm.salary_distribution SET level_1_id = #{levelOneId}, level_2_id = #{levelTwoId}, " +
             "level_3_id = #{levelThreeId}, number_of_employees = #{numberOfEmployees}, total_base_salary = #{totalBaseSalary}, " +
-            "status = #{status}, registrar = #{registrar} WHERE distribution_id = #{distributionID}")
+            "status = #{status}, registrar = #{registrar}, registration_time = #{registrationTime} WHERE distribution_id = #{distributionID}")
     void updateSalaryDistribution(SalaryDistribution salaryDistribution);
 
     // 删除薪酬发放记录
@@ -36,8 +36,18 @@ public interface SalaryDistributionMapper extends BaseMapper<SalaryDistribution>
     int deleteById(@Param("distributionID") Integer distributionID);
 
     // 查询所有薪酬发放记录
-    @Select("SELECT * FROM hrm.salary_distribution")
+    @Select("SELECT distribution_id AS distributionID, " +
+            "level_1_id AS levelOneId, " +
+            "level_2_id AS levelTwoId, " +
+            "level_3_id AS levelThreeId, " +
+            "number_of_employees AS numberOfEmployees, " +
+            "total_base_salary AS totalBaseSalary, " +
+            "status, " +
+            "registrar, " +
+            "registration_time " +
+            "FROM hrm.salary_distribution")
     List<SalaryDistribution> selectAllDistributions();
+
 
     // 这里可以添加更多自定义查询方法
 }

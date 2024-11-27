@@ -33,7 +33,7 @@
 
     <button type="submit" class="btn">查询</button>
     <button type="button" class="btn" id="createStandard" style="display: none;">创建薪资标准</button>
-    <button type="button" class="btn" onclick="window.location.href='salaryManagement'">返回</button>
+    <button type="button" class="btn" onclick="window.location.href='/salaryManagement'">返回</button>
   </form>
 </div>
 
