@@ -75,18 +75,18 @@ public class EmployeeController {
 
 
     @PostMapping("/register")
-    public String registerEmployee(@ModelAttribute EmployeeRecord employeeRecord,
-                                   @RequestParam("photoUrl") String photoUrl) {
+    public String registerEmployee(@ModelAttribute EmployeeRecord employeeRecord) {
         // 这里可以进行进一步处理，例如处理上传的 Base64 数据
-        employeeRecord.setPhotoUrl(photoUrl); // 设置 photoUrl
-        employeeService.addEmployee(employeeRecord);
-//<<<<<<< HEAD
+//        employeeRecord.setPhotoUrl(photoUrl); // 设置 photoUrl
         System.out.println(employeeRecord);
-//=======
+        employeeService.addEmployee(employeeRecord);
+
+
+
 
         //添加逻辑
         //添加机构发放单记录和员工薪酬记录
-//>>>>>>> ca48bc6ac24878be5ebe8e624b2776f9cb3e0292
+
         return "redirect:/employee/list"; // 提交后重定向到员工列表
     }
 

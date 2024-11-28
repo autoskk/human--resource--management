@@ -134,19 +134,19 @@
             });
         });
 
-        $(document).ready(function() {
-            $('#photoUpload').change(function(event) {
-                const file = event.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        $('#photoUrl').val(e.target.result); // 设置照片URL为base64字符串
-                        $('#photoPreview img').attr('src', e.target.result).show(); // 显示照片预览
-                    }
-                    reader.readAsDataURL(file); // 读取文件作为数据URL
-                }
-            });
-        });
+        // $(document).ready(function() {
+        //     $('#photoUpload').change(function(event) {
+        //         const file = event.target.files[0];
+        //         if (file) {
+        //             const reader = new FileReader();
+        //             reader.onload = function(e) {
+        //                 $('#photoUrl').val(e.target.result); // 设置照片URL为base64字符串
+        //                 $('#photoPreview img').attr('src', e.target.result).show(); // 显示照片预览
+        //             }
+        //             reader.readAsDataURL(file); // 读取文件作为数据URL
+        //         }
+        //     });
+        // });
 
 
 
@@ -156,6 +156,8 @@
 <a href="${pageContext.request.contextPath}/employee/home">返回主页</a>
 <h1>人力资源档案登记</h1>
 <form action="${pageContext.request.contextPath}/employee/register" method="post">
+
+    <input type="hidden" id="createdBy" name="createdBy"/>
 
     <div class="form-group">
         <label for="employeeName">姓名:</label>
@@ -170,7 +172,7 @@
         </select>
     </div>
 
-    <input type="hidden" id="createdBy" name="createdBy" value=""/>
+
 
     <div class="form-group">
         <label for="email">邮箱:</label>
@@ -242,14 +244,16 @@
         </select>
     </div>
 
-    <div class="form-group">
-        <label for="photoUpload">上传照片:</label>
-        <input type="file" id="photoUpload" name="photoUpload" accept="image/*" required/>
-        <div id="photoPreview">
-            <img src="" alt="预览照片" style="display:none;" />
-        </div>
-        <input type="hidden" name="photoUrl" id="photoUrl" /> <!-- 隐藏字段存储照片的 URL -->
-    </div>
+<%--    <div class="form-group">--%>
+<%--        <label for="photoUpload">上传照片:</label>--%>
+<%--        <input type="file" id="photoUpload" name="photoUpload" accept="image/*" required/>--%>
+<%--        <div id="photoPreview">--%>
+<%--            <img src="" alt="预览照片" style="display:none;" />--%>
+<%--        </div>--%>
+<%--        <input type="hidden" name="photoUrl" id="photoUrl" /> <!-- 隐藏字段存储照片的 URL -->--%>
+<%--    </div>--%>
+
+    <input type="hidden" name="photoUrl" id="photoUrl"  value="kk"/>
 
     <div class="form-group">
         <label for="major">专业:</label>
