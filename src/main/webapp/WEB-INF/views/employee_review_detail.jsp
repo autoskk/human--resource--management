@@ -56,65 +56,29 @@
     input[type="submit"]:hover {
       background-color: #218838;
     }
-    .photo-container {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      border: 2px solid #ccc;
-      border-radius: 5px;
-      padding: 10px;
-      text-align: center;
-      background-color: #fff;
-      max-width: 220px;
-    }
-    #photoDropZone {
-      border: 2px dashed #ccc;
-      border-radius: 5px;
-      padding: 10px;
-      margin-bottom: 10px;
-      cursor: pointer;
-    }
     #photoPreview {
-      display: none;
-      margin-bottom: 10px;
+      margin-top: 10px; /* 确保有间距 */
     }
+
     #photoPreview img {
-      width: 100%;
-      height: auto;
-    }
-    #photoUrl {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
+      display: none; /* 初始隐藏 */
+      width: 200px; /* 设置宽度 */
+      height: auto; /* 自适应高度 */
+      border: 1px solid #ddd; /* 增加边框以便于查看 */
+      border-radius: 4px; /* 圆角 */
     }
   </style>
   <script>
     $(document).ready(function() {
-      var dropZone = $('#photoDropZone');
-      dropZone.on('dragover', function(event) {
-        event.preventDefault();
-        dropZone.addClass('hover');
-      });
-
-      dropZone.on('dragleave', function() {
-        dropZone.removeClass('hover');
-      });
-
-      dropZone.on('drop', function(event) {
-        event.preventDefault();
-        dropZone.removeClass('hover');
-
-        var files = event.originalEvent.dataTransfer.files;
-        if (files.length > 0) {
-          var file = files[0];
-          var reader = new FileReader();
+      $('#photoUpload').change(function(event) {
+        const file = event.target.files[0];
+        if (file) {
+          const reader = new FileReader();
           reader.onload = function(e) {
-            $('#photoUrl').val(e.target.result);
-            $('#photoPreview img').attr('src', e.target.result);
-            $('#photoPreview').show();
+            // 显示新选择的照片
+            $('#photoPreview img').attr('src', e.target.result).show();
           }
-          reader.readAsDataURL(file);
+          reader.readAsDataURL(file); // 读取文件
         }
       });
     });
@@ -126,7 +90,7 @@
 <%
   EmployeeRecord employeeRecord = (EmployeeRecord) request.getAttribute("employee");
 %>
-<form action="${pageContext.request.contextPath}/employee/review" method="post">
+<form action="${pageContext.request.contextPath}/employee/review" method="post" enctype="multipart/form-data">
 
   <input type="hidden" name="recordId" value="<%= employeeRecord.getRecordId() %>"/>
   <input type="hidden" name="createdBy" value="<%= employeeRecord.getCreatedBy() %>"/>
@@ -138,7 +102,7 @@
   <input type="hidden" name="categoryId" value="<%= employeeRecord.getCategoryId() %>"/>
   <input type="hidden" name="positionId" value="<%= employeeRecord.getPositionId() %>"/>
   <%--  <input type="hidden" name="salaryStandardId" value="<%= employeeRecord.getSalaryStandardId() %>"/>--%>
-  <input type="hidden" name="photoUrl" value="<%= employeeRecord.getPhotoUrl() %>"/>
+<%--  <input type="hidden" name="photoUrl" value="<%= employeeRecord.getPhotoUrl() %>"/>--%>
 
   <div class="form-group">
     <label>档案编号:</label>
@@ -227,12 +191,12 @@
     </select>
   </div>
 
-  <div class="photo-container">
-    <div id="photoDropZone">拖放照片至此</div>
+  <div class="form-group">
+    <label for="photoUpload">更换照片:</label>
+    <input type="file" id="photoUpload" name="photoUpload" accept="image/*" />
     <div id="photoPreview">
-      <img src="" alt="预览照片"/>
+      <img src="${employee.photoUrl}" alt="当前照片" style="width: 200px; height: auto; display: block;"/>
     </div>
-    <input type="text" name="photoUrl" id="photoUrl" placeholder="照片URL" value="<%= employeeRecord.getPhotoUrl() %>"/>
   </div>
 
   <div class="form-group">

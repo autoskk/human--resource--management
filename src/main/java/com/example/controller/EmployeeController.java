@@ -7,6 +7,13 @@ import com.example.service.UserService;
 //=======
 //>>>>>>> ca48bc6ac24878be5ebe8e624b2776f9cb3e0292
 import com.example.service.impl.*;
+import com.aliyun.oss.ClientException;
+import com.aliyun.oss.OSS;
+import com.aliyun.oss.common.auth.*;
+import com.aliyun.oss.OSSClientBuilder;
+import com.aliyun.oss.OSSException;
+import com.aliyun.oss.model.PutObjectRequest;
+import com.aliyun.oss.model.PutObjectResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -15,13 +22,16 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 //<<<<<<< HEAD
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 //=======
 //>>>>>>> ca48bc6ac24878be5ebe8e624b2776f9cb3e0292
 import java.util.Date;
+import java.util.InputMismatchException;
 import java.util.List;
 
 @Controller
@@ -75,21 +85,16 @@ public class EmployeeController {
 
 
     @PostMapping("/register")
-    public String registerEmployee(@ModelAttribute EmployeeRecord employeeRecord) {
-        // 这里可以进行进一步处理，例如处理上传的 Base64 数据
-//        employeeRecord.setPhotoUrl(photoUrl); // 设置 photoUrl
-        System.out.println(employeeRecord);
-        employeeService.addEmployee(employeeRecord);
+    public String registerEmployee(@ModelAttribute EmployeeRecord employeeRecord,
+                                   @RequestParam("photoUpload") MultipartFile file) {
+        if (file != null && !file.isEmpty()) {
+            String photoUrl = uploadFileToOSS(file); // 上传文件并获取URL
+            employeeRecord.setPhotoUrl(photoUrl); // 设置图片URL
+        }
 
-
-
-
-        //添加逻辑
-        //添加机构发放单记录和员工薪酬记录
-
+        employeeService.addEmployee(employeeRecord); // 保存员工记录
         return "redirect:/employee/list"; // 提交后重定向到员工列表
     }
-
 
 
 
@@ -170,18 +175,12 @@ public class EmployeeController {
     }
 
     @PostMapping("/update")
-    public String updateEmployee(@ModelAttribute EmployeeRecord employeeRecord) {
+    public String updateEmployee(@ModelAttribute EmployeeRecord employeeRecord,
+                                 @RequestParam(value = "photoUpload", required = false) MultipartFile file) {
 
-
-        // 验证传入的组织层次ID是否有效
-        if (level1OrganizationService.getLevel1Organization(employeeRecord.getLevel1Id()) == null) {
-            throw new IllegalArgumentException("一级机构不存在");
-        }
-        if (level2OrganizationService.getLevel2Organization(employeeRecord.getLevel2Id()) == null) {
-            throw new IllegalArgumentException("二级机构不存在");
-        }
-        if (level3OrganizationService.getLevel3Organization(employeeRecord.getLevel3Id()) == null) {
-            throw new IllegalArgumentException("三级机构不存在");
+        if (file != null && !file.isEmpty()) {
+            String photoUrl = uploadFileToOSS(file); // 上传文件并获取URL
+            employeeRecord.setPhotoUrl(photoUrl); // 设置图片URL
         }
 
         employeeRecord.setStatus(employeeRecord.getStatus());
@@ -258,7 +257,14 @@ public class EmployeeController {
 
     // 处理复核操作
     @PostMapping("/review")
-    public String processReview(@ModelAttribute EmployeeRecord employeeRecord) {
+    public String processReview(@ModelAttribute EmployeeRecord employeeRecord,
+                                @RequestParam(value = "photoUpload", required = false) MultipartFile file) {
+
+        if (file != null && !file.isEmpty()) {
+            String photoUrl = uploadFileToOSS(file); // 上传文件并获取URL
+            employeeRecord.setPhotoUrl(photoUrl); // 设置图片URL
+        }
+
         employeeRecord.setStatus("正常"); // 将状态修改为正常
         employeeService.editEmployee(employeeRecord); // 保存修改
         return "redirect:/employee/review"; // 复核后重定向到复核列表

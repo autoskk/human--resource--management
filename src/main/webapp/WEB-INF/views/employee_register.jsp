@@ -56,37 +56,16 @@
         input[type="submit"]:hover {
             background-color: #218838;
         }
-        .photo-container {
-            position: absolute; /* 绝对定位 */
-            top: 20px; /* 距离顶部 */
-            right: 20px; /* 距离右侧 */
-            border: 2px solid #ccc;
-            border-radius: 5px;
-            padding: 10px;
-            text-align: center;
-            background-color: #fff; /* 背景色填充 */
-            max-width: 220px; /* 设置最大宽度 */
-        }
-        #photoDropZone {
-            border: 2px dashed #ccc;
-            border-radius: 5px;
-            padding: 10px;
-            margin-bottom: 10px;
-            cursor: pointer; /* 鼠标指向时的样式 */
-        }
         #photoPreview {
-            display: none;
-            margin-bottom: 10px;
+            margin-top: 10px; /* 确保有间距 */
         }
+
         #photoPreview img {
-            width: 100%; /* 适应容器 */
+            display: none; /* 初始隐藏 */
+            width: 200px; /* 设置宽度 */
             height: auto; /* 自适应高度 */
-        }
-        #photoUrl {
-            width: 100%; /* 100% 宽度 */
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+            border: 1px solid #ddd; /* 增加边框以便于查看 */
+            border-radius: 4px; /* 圆角 */
         }
     </style>
     <script>
@@ -134,19 +113,19 @@
             });
         });
 
-        // $(document).ready(function() {
-        //     $('#photoUpload').change(function(event) {
-        //         const file = event.target.files[0];
-        //         if (file) {
-        //             const reader = new FileReader();
-        //             reader.onload = function(e) {
-        //                 $('#photoUrl').val(e.target.result); // 设置照片URL为base64字符串
-        //                 $('#photoPreview img').attr('src', e.target.result).show(); // 显示照片预览
-        //             }
-        //             reader.readAsDataURL(file); // 读取文件作为数据URL
-        //         }
-        //     });
-        // });
+        $(document).ready(function () {
+            $('#photoUpload').change(function (event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        $('#photoPreview img').attr('src', e.target.result).show(); // 显示预览
+                    }
+                    reader.readAsDataURL(file); // 读取文件
+                }
+            });
+        });
+
 
 
 
@@ -155,7 +134,7 @@
 <body>
 <a href="${pageContext.request.contextPath}/employee/home">返回主页</a>
 <h1>人力资源档案登记</h1>
-<form action="${pageContext.request.contextPath}/employee/register" method="post">
+<form action="${pageContext.request.contextPath}/employee/register" method="post" enctype="multipart/form-data">
 
     <input type="hidden" id="createdBy" name="createdBy"/>
 
@@ -244,16 +223,16 @@
         </select>
     </div>
 
-<%--    <div class="form-group">--%>
-<%--        <label for="photoUpload">上传照片:</label>--%>
-<%--        <input type="file" id="photoUpload" name="photoUpload" accept="image/*" required/>--%>
-<%--        <div id="photoPreview">--%>
-<%--            <img src="" alt="预览照片" style="display:none;" />--%>
-<%--        </div>--%>
-<%--        <input type="hidden" name="photoUrl" id="photoUrl" /> <!-- 隐藏字段存储照片的 URL -->--%>
-<%--    </div>--%>
+    <div class="form-group">
+        <label for="photoUpload">上传照片:</label>
+        <input type="file" id="photoUpload" name="photoUpload" accept="image/*" required/>
+        <div id="photoPreview">
+            <img src="" alt="预览照片" />
+        </div>
+        <input type="hidden" name="photoUrl" id="photoUrl" />
+    </div>
 
-    <input type="hidden" name="photoUrl" id="photoUrl"  value="kk"/>
+<%--    <input type="hidden" name="photoUrl" id="photoUrl"  value="kk"/>--%>
 
     <div class="form-group">
         <label for="major">专业:</label>
