@@ -38,7 +38,7 @@
                     sessionStorage.setItem('currentUser', JSON.stringify(user));
                     $('#loginMessage').html('登录成功! 欢迎, ' + username);
                     // 可选: 跳转到登记薪酬标准页面
-                     window.location.href = 'salaryManagement'; // 或其他页面
+                     window.location.href = 'index'; // 或其他页面
                 },
                 error: function() {
                     $('#loginMessage').html('登录失败。请检查您的用户名和密码。');

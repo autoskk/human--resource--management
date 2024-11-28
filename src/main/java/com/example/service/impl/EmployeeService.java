@@ -5,8 +5,10 @@ import com.example.pojo.EmployeeRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 @Service
 public class EmployeeService {
@@ -25,6 +27,10 @@ public class EmployeeService {
     public void addEmployee(EmployeeRecord employeeRecord) {
         String recordId = generateRecordId(employeeRecord);
         employeeRecord.setRecordId(recordId);
+        employeeRecord.setStatus("待复核");
+        TimeZone.setDefault(TimeZone.getTimeZone("Asia/Shanghai"));
+        Date date = new Date();
+        employeeRecord.setCreatedDate(date);
         employeeMapper.insertEmployee(employeeRecord);
     }
 
