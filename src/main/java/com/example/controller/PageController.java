@@ -49,12 +49,11 @@ public class PageController {
 
     @GetMapping("/salaryStandardManagement")
     public String salaryStandardManagementPage() {
-        return "salaryStandardManagement";
+        return "salaryStandardManagementPage";
     }
-
     @GetMapping("/salaryDistributionManagement")
     public String salaryDistributionManagementPage() {
-        return "salaryDistributionManagement";
+        return "salaryDistributionManagementPage";
     }
 
     @GetMapping("/createSalaryStandard")
@@ -72,5 +71,19 @@ public class PageController {
         model.addAttribute("positionCategories", positionCategories);
 
         return "createDistribution";
+    }
+    @GetMapping("/editDistribution")
+    public String editDistributionPage(Model model) {
+            // 获取一级机构、二级机构、职位类别的数据，用于下拉框展示
+         List<Level1Organization> level1Organizations = level1OrganizationService.getAllLevel1Organizations();
+         List<PositionCategory> positionCategories = positionCategoryService.getAllPositionCategories();
+
+        model.addAttribute("level1Organizations", level1Organizations);
+        model.addAttribute("positionCategories", positionCategories);
+
+
+        return "editDistribution";
+
+
     }
 }

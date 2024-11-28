@@ -4,6 +4,7 @@ import com.example.pojo.User;
 import com.example.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -52,9 +53,12 @@ public class UserController {
     }
 
     @PostMapping // 添加用户
-    public ResponseEntity<User> addUser(@RequestBody User user) {
+    public ResponseEntity<User> addUser(@RequestBody User user, Model model) {
         // 在这里可以进行基础验证，比如用户名不能为空
         userService.addUser(user);
+        if (user != null) {
+            model.addAttribute("currentUser", user);
+        }
         return ResponseEntity.status(201).body(user); // 返回 201 Created 和新增的用户信息
     }
 

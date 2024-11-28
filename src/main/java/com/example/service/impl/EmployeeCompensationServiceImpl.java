@@ -25,8 +25,8 @@ public class EmployeeCompensationServiceImpl implements EmployeeCompensationServ
     }
 
     @Override
-    public void updateEmployeeCompensation(EmployeeCompensation employeeCompensation) {
-        employeeCompensationMapper.updateById(employeeCompensation);
+    public void updateEmployeeCompensation( EmployeeCompensation employeeCompensation) {
+        employeeCompensationMapper.updateEmployeeCompensation(employeeCompensation);
     }
 
     @Override

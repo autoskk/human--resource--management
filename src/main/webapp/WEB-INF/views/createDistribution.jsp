@@ -63,7 +63,7 @@
 </style>
 
 <div class="form-container">
-    <h2>登记薪酬发放单</h2>
+    <h2>创建薪酬发放单</h2>
     <form id="registerDistributionForm">
         <label>发放单编号:</label>
         <input type="text" id="distributionID" name="distributionID" readonly/>
@@ -243,8 +243,11 @@
             method: 'PUT',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(formData)
-        });
-        window.location.href = "/salary-distributions";
+        })
+            .then(response => {
+                window.location.href = "/salary-distributions";
+            })
+
     }
 
     function loadEmployeeCompensations(distributionId) {
@@ -519,7 +522,9 @@
         $('input[name="distributionId"]').val(distributionID);
 
         // 根据员工ID获取薪酬信息
-        fetch('/employees/compensation/' + employeeId) // 假设这个 API 能获取特定员工的薪酬信息
+        fetch('/employees/compensation/'+employeeId+'?distributionId='+distributionID, {
+            method: 'GET',
+           }) // 假设这个 API 能获取特定员工的薪酬信息
             .then(response => {
                 if (!response.ok) {
                     throw new Error('获取员工薪酬信息失败');
@@ -528,13 +533,17 @@
             })
             .then(compensation => {
 
-                loadSalaryStandards()
+                loadSalaryStandards(compensation.salaryStandardID)
                 // 填充模态框的输入字段
                 $('input[name="employeeId"]').val(compensation.employeeId);
-                $('input[name="salaryStandardId"]').val(compensation.salaryStandardId);
+                // $('#salaryStandardSelect').val(compensation.salaryStandardID);
+                // 填充其他补充信息
+                $('input[name="allowances"]').val(compensation.allowances || '0.00');
+                $('input[name="bonus"]').val(compensation.bonus || '0.00');
+                $('input[name="deductions"]').val(compensation.deductions || '0.00');
 
                 // 获取薪酬标准
-                return fetch('/salary-standards/getStandard/' + compensation.salaryStandardId);
+                return fetch('/salary-standards/getStandard/' + compensation.salaryStandardID);
             })
             .then(response => {
                 if (!response.ok) {
@@ -550,10 +559,6 @@
                 $('input[name="unemploymentInsurance"]').val(salaryStandard.unemploymentInsurance || '0.00');
                 $('input[name="housingFund"]').val(salaryStandard.housingFund || '0.00');
 
-                // 填充其他补充信息
-                $('input[name="allowances"]').val(compensation.allowances || '0.00');
-                $('input[name="bonus"]').val(compensation.bonus || '0.00');
-                $('input[name="deductions"]').val(compensation.deductions || '0.00');
 
                 // 显示模态框
                 $('#employeeCompensationModal').fadeIn();
@@ -574,7 +579,7 @@
 
     }
 
-    function loadSalaryStandards() {
+    function loadSalaryStandards(selectedId) {
         fetch('/salary-standards/getAllSalaryRecords')
             .then(response => response.json())
             .then(data => {
@@ -584,6 +589,10 @@
                 data.forEach(standard => {
                     select.append(new Option(standard.standardName, standard.salaryStandardID));
                 });
+                // 如果有选中的ID，则将其设置为选中项
+                if (selectedId) {
+                    select.val(selectedId);
+                }
             })
             .catch(error => console.error('加载薪酬标准失败:', error));
     }
@@ -613,6 +622,14 @@
     // Function to submit the employee compensation form
     function submitEmployeeCompensation() {
         const distributionID = $('#distributionID').val();
+        const formData = {
+            employeeId: $('input[name="employeeId"]').val(),
+            allowances: parseFloat($('input[name="allowances"]').val()) || 0.00,
+            bonus: parseFloat($('input[name="bonus"]').val()) || 0.00,
+            deductions: parseFloat($('input[name="deductions"]').val()) || 0.00,
+            distributionId: $('input[name="distributionId"]').val(),
+            salaryStandardID: $('#salaryStandardSelect').val()
+        };
         fetch('/salary-distributions/getDistribution/' + distributionID, {
             method: 'GET',
             headers: {
@@ -620,15 +637,6 @@
             }
         })
             .then(response => {
-                const formData = {
-                    employeeId: $('input[name="employeeId"]').val(),
-                    allowances: parseFloat($('input[name="allowances"]').val()) || 0.00,
-                    bonus: parseFloat($('input[name="bonus"]').val()) || 0.00,
-                    deductions: parseFloat($('input[name="deductions"]').val()) || 0.00,
-                    distributionId: $('input[name="distributionId"]').val(),
-                    salaryStandardID: $('#salaryStandardSelect').val()
-
-                };
                 if (response.ok) {
                     return fetch('/employees/compensation', {
                         method: 'POST',
@@ -656,8 +664,25 @@
                     updateEmployeeCompensations(distributionID); // Refresh the list after saving
                     closeModal('employeeCompensationModal'); // Close modal
                 } else {
-                    alert('保存员工薪酬信息失败');
+                    fetch('/employees/compensation/' + formData.employeeId, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(formData)
+                    })
+                        .then(response => {
+                            if (response.ok) {
+                                alert('员工薪酬信息已保存');
+                                updateEmployeeCompensations(distributionID); // Refresh the list after saving
+                                closeModal('employeeCompensationModal'); // Close modal
+                            } else {
+                                alert('员工薪酬信息保存失败！');
+                            }
+
+                        })
                 }
+
             })
             .catch(error => alert('保存员工薪酬信息失败: ' + error.message));
     }

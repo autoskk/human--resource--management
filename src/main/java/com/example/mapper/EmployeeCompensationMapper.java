@@ -34,12 +34,10 @@ public interface EmployeeCompensationMapper extends BaseMapper<EmployeeCompensat
 
 
     // 更新员工薪酬信息
-    @Update("UPDATE employee_compensation SET allowances = #{allowances}, bonus = #{bonus}, deductions = #{deductions} " +
-            "WHERE employee_id = #{employeeId}")
-    int updateEmployeeCompensation(@Param("employeeId") String employeeId,
-                                   @Param("allowances") Double allowances,
-                                   @Param("bonus") Double bonus,
-                                   @Param("deductions") Double deductions);
+    @Update("UPDATE employee_compensation SET salary_standard_id=#{salaryStandardID}, allowances = #{allowances}, bonus = #{bonus}, deductions = #{deductions} " +
+            "WHERE employee_id = #{employeeId} AND distribution_id = #{distributionId}")
+    int updateEmployeeCompensation(EmployeeCompensation compensation);
+
 
     // 删除员工薪酬信息
     @Delete("DELETE FROM employee_compensation WHERE employee_id = #{employeeId} AND distribution_id = #{distributionId}")
@@ -47,6 +45,7 @@ public interface EmployeeCompensationMapper extends BaseMapper<EmployeeCompensat
 
     @Delete("DELETE FROM employee_compensation WHERE distribution_id = #{distributionId}")
     int deleteByDistributionId(@Param("distributionId") Integer distributionId);
+
 
 
 }

@@ -5,12 +5,14 @@ import com.example.pojo.SalaryDistribution;
 import com.example.service.EmployeeCompensationService;
 import com.example.service.SalaryDistributionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 @Controller
@@ -38,8 +40,8 @@ public class SalaryDistributionController {
 
         model.addAttribute("salaryDistribution", allSalaryDistribution); // 将结果添加到模型中
         model.addAttribute("employeeCompensations", allEmployeeCompensations); // 将员工薪酬信息添加到模型中
-
-        return "salaryDistributionManagement"; // 返回相应的 JSP 视图名
+        System.out.println(allSalaryDistribution);
+        return "redirect:/salaryDistributionManagement"; // 返回相应的 JSP 视图名
     }
 
 
@@ -66,6 +68,7 @@ public class SalaryDistributionController {
     @GetMapping("/getDistribution/{id}")
     public ResponseEntity<SalaryDistribution> getSalaryDistributionById(@PathVariable Integer id) {
         SalaryDistribution salaryDistribution = salaryDistributionService.getDistributionById(id);
+        System.out.println(salaryDistribution);
         if (salaryDistribution != null) {
             return ResponseEntity.ok(salaryDistribution); // 200 OK with data
         } else {
@@ -91,6 +94,7 @@ public class SalaryDistributionController {
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteSalaryDistribution(@PathVariable Integer id) {
         try {
+            employeeCompensationService.deleteDistributionEmployeeCompensation(id);
             salaryDistributionService.deleteSalaryDistribution(id);
             return ResponseEntity.ok("薪资分配删除成功"); // 204 No Content
         } catch (Exception e) {
@@ -99,11 +103,23 @@ public class SalaryDistributionController {
         }
     }
 
-    // 获取所有待处理的薪资分配
-    @GetMapping("/pending")
-    public String getPendingDistributions(Model model) {
-        List<SalaryDistribution> pendingDistributions = salaryDistributionService.getPendingDistributions();
-        model.addAttribute("pendingDistributions", pendingDistributions);
+    @GetMapping("/status/{status}")
+    public String getDistributionsByStatus(@PathVariable String status, Model model) {
+        List<SalaryDistribution> salaryDistributions = salaryDistributionService.getDistributionsByStatus(status);
+        model.addAttribute("salaryDistribution", salaryDistributions);
         return "salaryDistributionManagement"; // 返回待处理薪资分配的视图
+    }
+
+    // 根据 ID 或关键字搜索薪酬标准
+    @GetMapping("/search")
+    public String searchSalaryDistributions(
+            @RequestParam(required = false) Integer distributionID,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date startTime,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date endTime,
+            Model model) {
+        List<SalaryDistribution> results = salaryDistributionService.searchSalaryDistributions(distributionID, keyword, startTime, endTime);
+        model.addAttribute("salaryDistribution", results); // 将结果添加到模型中
+        return "salaryDistributionManagement"; // 返回相应的 JSP 视图名
     }
 }

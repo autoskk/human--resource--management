@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <html>
 <head>
   <title>薪资发放管理</title>
@@ -17,11 +18,22 @@
 
 <h2>薪资发放管理</h2>
 <div>
-  <label>薪酬发放单编号:</label>
-  <input type="text" id="searchDistributionID" placeholder="请输入发放单编号" />
-  <button class="btn" id="searchDistribution">查询</button>
-  <button class="btn" id="createDistribution">创建薪酬发放单</button>
-  <button type="button" class="btn" onclick="window.location.href='/salaryManagement'">返回</button>
+  <form action="/salary-distributions/search" method="get">
+    <label>薪酬发放单编号:</label>
+    <input type="text" name="distributionID" placeholder="请输入发放单编号" />
+    <label>关键词:</label>
+    <input type="text" name="keyword" placeholder="请输入关键词" />
+
+    <label>起始时间:</label>
+    <input type="date" name="startTime" id="startTime" />
+
+    <label>结束时间:</label>
+    <input type="date" name="endTime" id="endTime" />
+
+    <button type="submit" class="btn">查询</button>
+    <button class="btn" id="createDistribution">创建薪酬发放单</button>
+    <button type="button" class="btn" onclick="window.location.href='/salaryManagement'">返回</button>
+  </form>
 </div>
 
 <table>
@@ -34,6 +46,7 @@
     <th>人数</th>
     <th>基本薪酬总额</th>
     <th>状态</th>
+    <th>登记时间</th>
     <th>操作</th>
   </tr>
   </thead>
@@ -49,9 +62,13 @@
         <td>${distribution.totalBaseSalary}</td>
         <td>${distribution.status}</td>
         <td>
-          <button onclick="editDistribution(${distribution.distributionID})">编辑</button>
-          <button onclick="reviewDistribution(${distribution.distributionID})">复核</button>
-          <button onclick="deleteDistribution(${distribution.distributionID})">删除</button>
+          <fmt:formatDate value="${distribution.registrationTime}" pattern="yyyy-MM-dd" />
+        </td>
+        <td>
+          <!-- 控制按钮的显示 -->
+          <button onclick="editDistribution(${distribution.distributionID})" class="edit-btn" style="display:none;">登记</button>
+          <button onclick="reviewDistribution(${distribution.distributionID})" class="approve-btn" style="display:none;">复核</button>
+          <button onclick="deleteDistribution(${distribution.distributionID})" class="delete-btn" style="display:none;">删除</button>
         </td>
       </tr>
     </c:forEach>
@@ -67,55 +84,115 @@
 
 <script>
   $(document).ready(function() {
+    // 设置当前日期为起始和结束时间的默认值
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('startTime').value = today;
+    document.getElementById('endTime').value = today;
 
-    // 当页面加载时，为每一行的机构 ID 查询对应的名称
-    $('tr.distribution-row').each(function() {
-      let levelOneId = $(this).find('.level-one-id').text().trim();
-      let levelTwoId = $(this).find('.level-two-id').text().trim();
-      let levelThreeId = $(this).find('.level-three-id').text().trim();
+    // 获取当前用户信息
+    const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
 
-      // 查询一级机构名称
-      if (levelOneId) {
-        $.get('/organizations/level1/' + levelOneId, function(data) {
-          $(this).find('.level-one-id').text(data);
-        }.bind(this));
+    // 权限控制
+    if (currentUser && currentUser.roleId) {
+      const roleId = currentUser.roleId;
+
+      if (roleId === 5) { // 薪酬专员
+
+        // 循环显示可用操作按钮
+        $('tr.distribution-row').each(function() {
+          const status = $(this).find('td:eq(6)').text().trim(); // 状态列
+          if (status === '待登记') {
+            $(this).find('.edit-btn').show(); // 显示登记按钮
+          }
+          $(this).find('.delete-btn').show(); // 显示删除按钮
+
+          let levelOneId = $(this).find('.level-one-id').text().trim();
+          let levelTwoId = $(this).find('.level-two-id').text().trim();
+          let levelThreeId = $(this).find('.level-three-id').text().trim();
+
+          // 查询一级机构名称
+          if (levelOneId) {
+            $.get('/organizations/level1/' + levelOneId, function(data) {
+              $(this).find('.level-one-id').text(data);
+            }.bind(this));
+          }
+
+          // 查询二级机构名称
+          if (levelTwoId) {
+            $.get('/organizations/level2/' + levelTwoId, function(data) {
+              $(this).find('.level-two-id').text(data);
+            }.bind(this));
+          }
+
+          // 查询三级机构名称
+          if (levelThreeId) {
+            $.get('/organizations/level3/' + levelThreeId, function(data) {
+              $(this).find('.level-three-id').text(data);
+            }.bind(this));
+          }
+        });
+      } else if (roleId === 6) { // 薪酬经理
+
+        // 循环显示可用操作按钮
+        $('tr.distribution-row').each(function() {
+          const status = $(this).find('td:eq(6)').text().trim(); // 状态列
+          if (status === '待复核') {
+            $(this).find('.approve-btn').show(); // 显示复核按钮
+          }
+          $(this).find('.delete-btn').show(); // 显示删除按钮
+
+          let levelOneId = $(this).find('.level-one-id').text().trim();
+          let levelTwoId = $(this).find('.level-two-id').text().trim();
+          let levelThreeId = $(this).find('.level-three-id').text().trim();
+
+          // 查询一级机构名称
+          if (levelOneId) {
+            $.get('/organizations/level1/' + levelOneId, function(data) {
+              $(this).find('.level-one-id').text(data);
+            }.bind(this));
+          }
+
+          // 查询二级机构名称
+          if (levelTwoId) {
+            $.get('/organizations/level2/' + levelTwoId, function(data) {
+              $(this).find('.level-two-id').text(data);
+            }.bind(this));
+          }
+
+          // 查询三级机构名称
+          if (levelThreeId) {
+            $.get('/organizations/level3/' + levelThreeId, function(data) {
+              $(this).find('.level-three-id').text(data);
+            }.bind(this));
+          }
+        });
+
       }
-
-      // 查询二级机构名称
-      if (levelTwoId) {
-        $.get('/organizations/level2/' + levelTwoId, function(data) {
-          $(this).find('.level-two-id').text(data);
-        }.bind(this));
-      }
-
-      // 查询三级机构名称
-      if (levelThreeId) {
-        $.get('/organizations/level3/' + levelThreeId, function(data) {
-          $(this).find('.level-three-id').text(data);
-        }.bind(this));
-      }
-
-    });
-
-    $('#searchDistribution').click(function() {
-      loadSalaryDistributions($('#searchDistributionID').val());
-    });
+    }
 
     $('#createDistribution').click(function() {
       window.location.href = '/createDistribution'; // 假设登记页面的URL
     });
   });
 
-  function loadSalaryDistributions(distributionID) {
-    window.location.href = '/salary-distributions/' + distributionID; // 跳转到编辑页面
-  }
-
   function editDistribution(distributionID) {
-    window.location.href = '/salary-distributions/' + distributionID; // 跳转到编辑页面
+    fetch('/salary-distributions/getDistribution/' + distributionID)
+            .then(response => response.json())
+            .then(data => {
+              localStorage.setItem('distributionData', JSON.stringify(data));
+              window.location.href = '/employees/compensation/getEmployeeCompensationEdit/' + distributionID;
+            })
+            .catch(error => console.error('获取信息失败:', error));
   }
 
   function reviewDistribution(distributionID) {
-    window.location.href = '/salary-distributions/review/' + distributionID; // 跳转到复核页面
+    fetch('/salary-distributions/getDistribution/' + distributionID)
+            .then(response => response.json())
+            .then(data => {
+              localStorage.setItem('distributionData', JSON.stringify(data));
+              window.location.href = '/employees/compensation/getEmployeeCompensationPending/' + distributionID;
+            })
+            .catch(error => console.error('获取信息失败:', error));
   }
 
   function deleteDistribution(distributionID) {

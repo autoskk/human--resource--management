@@ -47,7 +47,7 @@ public class SalaryStandardController {
             Model model) {
         List<SalaryStandard> results = salaryStandardService.searchSalaryStandards(salaryStandardID, keyword, startTime, endTime);
         model.addAttribute("salaryStandards", results); // 将结果添加到模型中
-        return "salaryStandardManagement"; // 返回相应的 JSP 视图名，比如 "salaryStandards.jsp"
+        return "redirect:/salaryStandardManagement"; // 返回相应的 JSP 视图名，比如 "salaryStandards.jsp"
     }
 
     // 根据状态查询薪酬标准
@@ -66,7 +66,7 @@ public class SalaryStandardController {
             Model model) {
         List<SalaryStandard> standards = salaryStandardService.findByRegistrationTimeBetween(startTime, endTime);
         model.addAttribute("salaryStandards", standards); // 将结果添加到模型中
-        return "salaryStandardManagement"; // 返回相应的 JSP 视图名
+        return "redirect:/salaryStandardManagement"; // 返回相应的 JSP 视图名
     }
 
     // 根据基础工资范围查询薪酬标准
@@ -77,7 +77,7 @@ public class SalaryStandardController {
             Model model) {
         List<SalaryStandard> standards = salaryStandardService.findByBaseSalaryBetween(minSalary, maxSalary);
         model.addAttribute("salaryStandards", standards); // 将结果添加到模型中
-        return "salaryStandardManagement"; // 返回相应的 JSP 视图名
+        return "redirect:/salaryStandardManagement"; // 返回相应的 JSP 视图名
     }
 
     // 获取所有薪酬标准
@@ -85,7 +85,7 @@ public class SalaryStandardController {
     public String getAllSalaryRecords(Model model) {
         List<SalaryStandard> allSalaryRecords = salaryStandardService.getAllSalaryRecords();
         model.addAttribute("salaryStandards", allSalaryRecords); // 将结果添加到模型中
-        return "salaryStandardManagement"; // 返回相应的 JSP 视图名
+        return "redirect:/salaryStandardManagement"; // 返回相应的 JSP 视图名
     }
 
     // 获取所有薪酬标准
@@ -130,7 +130,7 @@ public class SalaryStandardController {
         } catch (Exception e) {
             model.addAttribute("message", "薪酬标准编辑失败: " + e.getMessage());
         }
-        return "redirect:/salary-standards"; // redirect到薪酬标准管理页面
+        return "redirect:/salaryStandardManagement"; // redirect到薪酬标准管理页面
     }
 
 

@@ -63,7 +63,7 @@
 </style>
 
 <div class="form-container">
-    <h2>登记薪酬发放单</h2>
+    <h2>复核薪酬发放单</h2>
     <form id="registerDistributionForm">
         <label>发放单编号:</label>
         <input type="text" id="distributionID" name="distributionID" readonly/>
@@ -93,6 +93,7 @@
         <input type="number" id="totalBaseSalary" name="totalBaseSalary" step="0.01" readonly/>
         <label>实际薪酬总额:</label>
         <input type="number" id="totalSalary" name="totalSalary" step="0.01" readonly/>
+
         <label>状态:</label>
         <select name="status" disabled>
             <option value="待登记" selected>待登记</option>
@@ -103,9 +104,12 @@
         <label>登记人:</label>
         <input type="text" name="registrar" readonly/>
 
+        <label>登记时间:</label>
+        <input type="text" name="registrationTime" id="registrationTime" readonly/>
+
         <div>
             <button type="button" id="saveDistributionButton">保存</button>
-            <button type="button" id="registerDistributionButton">登记（待审核状态）</button>
+            <button type="button" id="registerDistributionButton">复核</button>
             <button type="button" id="showEmployeeCompensationFormButton">登记员工薪酬信息</button>
             <button type="button" onclick="back()">返回</button>
         </div>
@@ -206,10 +210,10 @@
         // Generate new distribution ID
 
         // Load current user info
-        const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
-        if (currentUser && currentUser.userName) {
-            $('input[name="registrar"]').val(currentUser.userName);
-        }
+        // const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+        // if (currentUser && currentUser.userName) {
+        //     $('input[name="registrar"]').val(currentUser.userName);
+        // }
 
         // // 表单字段输入时触发函数存储到 localStorage
         // $('#registerDistributionForm input, #registerDistributionForm select').on('change input', function() {
@@ -330,6 +334,9 @@
             $('#levelThreeId').val(formData.levelThreeId);
             $('select[name="status"]').val(formData.status);
             $('input[name="registrar"]').val(formData.registrar);
+            if(formData.registrationTime){
+                $('#registrationTime').val(formData.registrationTime.split('T')[0]);
+            }
             loadEmployeeCompensations(formData.distributionID);
 
             // Load level two and three based on the loaded values
@@ -463,7 +470,7 @@
             }
         })
             .then(response => {
-                $('select[name="status"]').val("待复核");
+                $('select[name="status"]').val("已复核");
                 const formData = {
                     distributionID: $('#distributionID').val(),
                     levelOneId: $('#levelOneId').val(),
@@ -471,7 +478,7 @@
                     levelThreeId: $('#levelThreeId').val(),
                     numberOfEmployees: $('#numberOfEmployees').val(),
                     totalBaseSalary: parseFloat( $('#totalBaseSalary').val()) || 0.00,
-                    status: "待复核",
+                    status: "已复核",
                     registrar: $('input[name="registrar"]').val()
                 };
                 if (response.ok) {
