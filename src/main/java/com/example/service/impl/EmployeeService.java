@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 @Service
 public class EmployeeService {
@@ -25,6 +26,10 @@ public class EmployeeService {
     public void addEmployee(EmployeeRecord employeeRecord) {
         String recordId = generateRecordId(employeeRecord);
         employeeRecord.setRecordId(recordId);
+        employeeRecord.setStatus("待复核");
+        TimeZone.setDefault(TimeZone.getTimeZone("Asia/Shanghai"));
+        Date date = new Date();
+        employeeRecord.setCreatedDate(date);
         employeeMapper.insertEmployee(employeeRecord);
     }
 
@@ -43,7 +48,6 @@ public class EmployeeService {
     public List<EmployeeRecord> getPendingEmployees() {
         return employeeMapper.findPendingEmployees();
     }
-
     public List<EmployeeRecord> getAllEmployees() {
         return employeeMapper.findAllEmployees();
     }
@@ -54,10 +58,11 @@ public class EmployeeService {
         return employeeMapper.searchEmployees(level1Id, level2Id, level3Id, categoryId, positionId, startDate, endDate);
     }
 
-//<<<<<<< HEAD
+    //<<<<<<< HEAD
     private String generateRecordId(EmployeeRecord employeeRecord) {
         // 获取当前年份
         String year = String.valueOf(java.util.Calendar.getInstance().get(java.util.Calendar.YEAR));
+
 
         // 获取一级、二级、三级机构的编号并转换为两位数字格式
         String level1Id = String.format("%02d", employeeRecord.getLevel1Id());
@@ -76,7 +81,7 @@ public class EmployeeService {
 
 
 
-//=======
+    //=======
     // 添加新的方法到 EmployeeService
     public Integer countEmployeesByLevel(int level1Id, int level2Id, int level3Id) {
         // 查询数据库返回符合条件的员工数量

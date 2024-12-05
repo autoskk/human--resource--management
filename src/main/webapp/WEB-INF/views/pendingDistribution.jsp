@@ -9,6 +9,7 @@
         margin: 0;
         padding: 20px;
         background-color: #f4f4f4;
+        color: #495057; /* 字体颜色 */
     }
 
     .form-container, .record-container {
@@ -17,38 +18,135 @@
         background-color: #fff;
         border: 1px solid #ddd;
         border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+        color: #007bff;
+        text-align: center;
+    }
+
+    label {
+        font-weight: bold;
+    }
+
+    .form-row {
+        display: flex;
+        flex-wrap: wrap; /* 允许换行 */
+        gap: 20px; /* 间距 */
+    }
+
+    .form-group {
+        flex: 1; /* 自动调整 */
+        min-width: 250px; /* 设置最小宽度 */
+    }
+
+    input[type="text"], input[type="number"], select {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+    th, td {
+        border: 1px solid #ddd;
+        padding: 12px;
+        text-align: left;
+    }
+    th {
+        background-color: #007bff;
+        color: white;
+    }
+    tr:hover {
+        background-color: #f1f1f1;
+    }
+    td button {
+        padding: 5px 10px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    button {
+        background-color: #007bff;
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        margin-right: 5px; /* 按钮间距 */
+    }
+
+    button:hover {
+        background-color: #0056b3;
     }
 
     table {
         width: 100%;
         border-collapse: collapse;
         margin-top: 20px;
+        background-color: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
-
     th, td {
+        border: 1px solid #dee2e6;
+        padding: 15px;
         text-align: left;
-        padding: 8px;
-        border-bottom: 1px solid #ddd;
     }
-
     th {
-        background-color: #f4f4f4;
+        background-color: #007bff;
+        color: white;
     }
-
-    button {
-        margin-right: 5px;
+    tr:hover {
+        background-color: #f1f1f1;
+    }
+    td button {
+        padding: 10px 15px; /* 适当增加内边距 */
+        border: none;
+        border-radius: 5px; /* 圆角 */
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.3s;
+        font-size: 16px; /* 统一按钮字体大小 */
+    }
+    .edit-btn {
+        background: #28a745;
+        color: white;
+    }
+    .delete-btn {
+        background: #dc3545;
+        color: white;
+    }
+    .edit-btn:hover {
+        background: #218838;
+        transform: translateY(-2px); /* 悬停效果 */
+    }
+    .delete-btn:hover {
+        background: #c82333;
+        transform: translateY(-2px); /* 悬停效果 */
     }
 
     .modal {
-        display: none; /* Initially hidden */
+        display: none;
         position: fixed;
         z-index: 1;
         left: 0;
         top: 0;
         width: 100%;
         height: 100%;
-        overflow: auto;
-        background-color: rgb(0, 0, 0);
         background-color: rgba(0, 0, 0, 0.4);
         padding-top: 60px;
     }
@@ -59,53 +157,100 @@
         padding: 20px;
         border: 1px solid #888;
         width: 80%;
+        border-radius: 5px;
+    }
+
+    .close {
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .close:hover, .close:focus {
+        color: red;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+
+    /* 添加响应式设计 */
+    @media (max-width: 768px) {
+        .form-row {
+            flex-direction: column; /* 移动设备上竖直排列 */
+        }
+        button {
+            width: 100%; /* 移动设备上按钮全宽 */
+            margin: 5px 0; /* 重新设置按钮间距 */
+        }
     }
 </style>
-
 <div class="form-container">
     <h2>复核薪酬发放单</h2>
     <form id="registerDistributionForm">
-        <label>发放单编号:</label>
-        <input type="text" id="distributionID" name="distributionID" readonly/>
+        <div class="form-row">
+            <div class="form-group">
+                <label>发放单编号:</label>
+                <input type="text" id="distributionID" name="distributionID" readonly />
+            </div>
 
-        <label>一级机构:</label>
-        <select id="levelOneId" name="levelOneId" disabled>
-            <option value="" disabled selected>请选择一级机构</option>
-            <c:forEach var="level1" items="${level1Organizations}">
-                <option value="${level1.level1Id}" >${level1.level1Name}</option>
-            </c:forEach>
-        </select>
+            <div class="form-group">
+                <label>一级机构:</label>
+                <select id="levelOneId" name="levelOneId" disabled>
+                    <option value="" disabled selected>请选择一级机构</option>
+                    <c:forEach var="level1" items="${level1Organizations}">
+                        <option value="${level1.level1Id}">${level1.level1Name}</option>
+                    </c:forEach>
+                </select>
+            </div>
 
-        <label>二级机构:</label>
-        <select id="levelTwoId" name="levelTwoId" disabled>
-            <option value="" disabled selected>请选择二级机构</option>
-        </select>
+            <div class="form-group">
+                <label>二级机构:</label>
+                <select id="levelTwoId" name="levelTwoId" disabled>
+                    <option value="" disabled selected>请选择二级机构</option>
+                </select>
+            </div>
 
-        <label>三级机构:</label>
-        <select id="levelThreeId" name="levelThreeId" disabled>
-            <option value="" disabled selected>请选择三级机构</option>
-        </select>
+            <div class="form-group">
+                <label>三级机构:</label>
+                <select id="levelThreeId" name="levelThreeId" disabled>
+                    <option value="" disabled selected>请选择三级机构</option>
+                </select>
+            </div>
 
-        <label>人数:</label>
-        <input type="number" id="numberOfEmployees" name="numberOfEmployees" readonly/>
+            <div class="form-group">
+                <label>人数:</label>
+                <input type="number" id="numberOfEmployees" name="numberOfEmployees" readonly />
+            </div>
 
-        <label>基本薪酬总额:</label>
-        <input type="number" id="totalBaseSalary" name="totalBaseSalary" step="0.01" readonly/>
-        <label>实际薪酬总额:</label>
-        <input type="number" id="totalSalary" name="totalSalary" step="0.01" readonly/>
+            <div class="form-group">
+                <label>基本薪酬总额:</label>
+                <input type="number" id="totalBaseSalary" name="totalBaseSalary" step="0.01" readonly />
+            </div>
 
-        <label>状态:</label>
-        <select name="status" disabled>
-            <option value="待登记" selected>待登记</option>
-            <option value="待复核">待复核</option>
-            <option value="已复核">已复核</option>
-        </select>
+            <div class="form-group">
+                <label>实际薪酬总额:</label>
+                <input type="number" id="totalSalary" name="totalSalary" step="0.01" readonly />
+            </div>
 
-        <label>登记人:</label>
-        <input type="text" name="registrar" readonly/>
+            <div class="form-group">
+                <label>状态:</label>
+                <select name="status" disabled>
+                    <option value="待登记" selected>待登记</option>
+                    <option value="待复核">待复核</option>
+                    <option value="已复核">已复核</option>
+                </select>
+            </div>
 
-        <label>登记时间:</label>
-        <input type="text" name="registrationTime" id="registrationTime" readonly/>
+            <div class="form-group">
+                <label>登记人:</label>
+                <input type="text" name="registrar" readonly />
+            </div>
+
+            <div class="form-group">
+                <label>登记时间:</label>
+                <input type="text" name="registrationTime" id="registrationTime" readonly />
+            </div>
+        </div>
 
         <div>
             <button type="button" id="saveDistributionButton">保存</button>
@@ -117,7 +262,6 @@
 </div>
 
 <div class="record-container">
-    <h2>员工薪酬信息列表</h2>
     <table id="employeeCompensationTable">
         <thead>
         <tr>
@@ -151,17 +295,15 @@
                     <td>${record.bonus}</td>
                     <td>${record.deductions}</td>
                     <td>
-                        <button onclick="editEmployeeCompensation('${record.employeeId}')">编辑</button>
-                        <button onclick="deleteEmployeeCompensation('${record.employeeId}','${record.distributionId}')">
-                            删除
-                        </button>
+                        <button class="edit-btn" onclick="editEmployeeCompensation('${record.employeeId}')">编辑</button>
+                        <button class="delete-btn" onclick="deleteEmployeeCompensation('${record.employeeId}','${record.distributionId}')">删除</button>
                     </td>
                 </tr>
             </c:forEach>
         </c:if>
         <c:if test="${empty employeeCompensations}">
             <tr>
-                <td colspan="11" style="text-align: center;">没有可显示的员工薪酬信息</td>
+                <td colspan="12" style="text-align: center;">没有可显示的员工薪酬信息</td>
             </tr>
         </c:if>
         </tbody>
@@ -174,33 +316,79 @@
         <span class="close" onclick="closeModal('employeeCompensationModal')">&times;</span>
         <h2>登记员工薪酬信息</h2>
         <form id="employeeCompensationForm">
-            <label>员工编号:</label>
-            <input type="text" name="employeeId" required/>
-            <label>薪酬标准编号:</label>
-            <select name="salaryStandardId" id="salaryStandardSelect" onchange="fillSalaryStandardInfo()" >
-                <option value="">请选择薪酬标准</option>
-            </select>
-            <label>基本薪资:</label>
-            <input type="number" name="baseSalary" id="baseSalary" step="0.01" readonly/>
-            <label>养老保险:</label>
-            <input type="number" name="pensionInsurance" id="pensionInsurance" step="0.01" readonly/>
-            <label>医疗保险:</label>
-            <input type="number" name="medicalInsurance" id="medicalInsurance" step="0.01" readonly/>
-            <label>失业保险:</label>
-            <input type="number" name="unemploymentInsurance" id="unemploymentInsurance" step="0.01" readonly/>
-            <label>住房公积金:</label>
-            <input type="number" name="housingFund" id="housingFund" step="0.01" readonly/>
-            <label>补助:</label>
-            <input type="number" name="allowances" step="0.01" value="0.00" required/>
-            <label>奖励奖金:</label>
-            <input type="number" name="bonus" step="0.01" value="0.00" required/>
-            <label>应扣奖金:</label>
-            <input type="number" name="deductions" step="0.01" value="0.00" required/>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>员工编号:</label>
+                    <select name="employeeId" id="employeeIdSelect" required>
+                        <option value="">请选择员工编号</option>
+                        <c:forEach var="employee" items="${employees}">
+                            <option value="${employee.recordId}">${employee.recordId} - ${employee.employeeName}</option>
+                        </c:forEach>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>薪酬标准编号:</label>
+                    <select name="salaryStandardId" id="salaryStandardSelect" onchange="fillSalaryStandardInfo()">
+                        <option value="">请选择薪酬标准</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>基本薪资:</label>
+                    <input type="number" name="baseSalary" id="baseSalary" step="0.01" readonly />
+                </div>
+
+                <div class="form-group">
+                    <label>养老保险:</label>
+                    <input type="number" name="pensionInsurance" id="pensionInsurance" step="0.01" readonly />
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>医疗保险:</label>
+                    <input type="number" name="medicalInsurance" id="medicalInsurance" step="0.01" readonly />
+                </div>
+
+                <div class="form-group">
+                    <label>失业保险:</label>
+                    <input type="number" name="unemploymentInsurance" id="unemploymentInsurance" step="0.01" readonly />
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>住房公积金:</label>
+                    <input type="number" name="housingFund" id="housingFund" step="0.01" readonly />
+                </div>
+
+                <div class="form-group">
+                    <label>补助:</label>
+                    <input type="number" name="allowances" step="0.01" value="0.00" required />
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>奖励奖金:</label>
+                    <input type="number" name="bonus" step="0.01" value="0.00" required />
+                </div>
+
+                <div class="form-group">
+                    <label>应扣奖金:</label>
+                    <input type="number" name="deductions" step="0.01" value="0.00" required />
+                </div>
+            </div>
+
             <input type="hidden" name="distributionId"/>
             <button type="submit">保存</button>
         </form>
     </div>
 </div>
+
 
 <script>
     $(document).ready(function () {
@@ -268,7 +456,7 @@
 
                     totalSalary+= compensation.allowances;
                     totalSalary+= compensation.bonus;
-                    totalSalary+= compensation.deductions;
+                    totalSalary-= compensation.deductions;
                     // 获取当前行的引用
                     index+=1;
                     const row = document.querySelector('#employeeCompensationTable tbody tr:nth-child('+index+')');
@@ -536,6 +724,8 @@
     function editEmployeeCompensation(employeeId) {
         // 设置下拉框为禁用状态
         document.getElementById('salaryStandardSelect').disabled = true;
+        document.getElementById('employeeIdSelect').disabled = true;
+
         const distributionID = $('input[name="distributionID"]').val();
         $('input[name="distributionId"]').val(distributionID);
 
@@ -551,9 +741,10 @@
             })
             .then(compensation => {
 
-                loadSalaryStandards(compensation.salaryStandardID)
+                loadSalaryStandards(compensation.salaryStandardID);
+                loadEmployeeIds(compensation.employeeId);
                 // 填充模态框的输入字段
-                $('input[name="employeeId"]').val(compensation.employeeId);
+                // $('input[name="employeeId"]').val(compensation.employeeId);
                 // $('#salaryStandardSelect').val(compensation.salaryStandardID);
                 // 填充其他补充信息
                 $('input[name="allowances"]').val(compensation.allowances || '0.00');
@@ -590,6 +781,7 @@
         if ($('#levelOneId').val() && $('#levelTwoId').val() && $('#levelThreeId').val()) {
             $('input[name="distributionId"]').val(distributionID);  // Set the distribution ID in the modal
             loadSalaryStandards();  // Load salary standards
+            loadEmployeeIds();
             $('#employeeCompensationModal').fadeIn();  // Show modal
         } else {
             alert("无法添加，请先选择机构！")
@@ -597,8 +789,26 @@
 
     }
 
+    // 新增函数: 加载员工编号
+    function loadEmployeeIds(selectedId) {
+        fetch('/employees/compensation')
+            .then(response => response.json())
+            .then(data => {
+                const select = $('#employeeIdSelect');
+                select.empty(); // 清空现有选项
+                select.append('<option value="">请选择员工编号</option>'); // 添加默认选项
+                data.forEach(employee => {
+                    select.append(new Option(employee.recordId + " - " + employee.employeeName, employee.recordId));
+                });
+                // 如果有选中的ID，则将其设置为选中项
+                if (selectedId) {
+                    select.val(selectedId);
+                }
+            })
+            .catch(error => console.error('加载员工编号失败:', error));
+    }
     function loadSalaryStandards(selectedId) {
-        fetch('/salary-standards/getAllSalaryRecords')
+        fetch('/salary-standards/getByStatus/'+"已复核")
             .then(response => response.json())
             .then(data => {
                 const select = $('#salaryStandardSelect');
@@ -636,18 +846,18 @@
             $('#housingFund').val('');
         }
     }
-
     // Function to submit the employee compensation form
     function submitEmployeeCompensation() {
         const distributionID = $('#distributionID').val();
         const formData = {
-            employeeId: $('input[name="employeeId"]').val(),
+            employeeId: $('select[name="employeeId"]').val(),
             allowances: parseFloat($('input[name="allowances"]').val()) || 0.00,
             bonus: parseFloat($('input[name="bonus"]').val()) || 0.00,
             deductions: parseFloat($('input[name="deductions"]').val()) || 0.00,
             distributionId: $('input[name="distributionId"]').val(),
             salaryStandardID: $('#salaryStandardSelect').val()
         };
+        saveDistribution();
         fetch('/salary-distributions/getDistribution/' + distributionID, {
             method: 'GET',
             headers: {
@@ -664,7 +874,6 @@
                         body: JSON.stringify(formData)
                     });
                 } else if (response.status === 404) {
-                    saveDistribution();
                     return fetch('/employees/compensation', {
                         method: 'POST',
                         headers: {
@@ -714,10 +923,12 @@
     function closeModal(modalId) {
         // 设置下拉框为禁用状态
         document.getElementById('salaryStandardSelect').disabled = false;
+        document.getElementById('employeeIdSelect').disabled = false;
         document.getElementById(modalId).style.display = "none";
     }
 
     $(document).on('click', '.close', function () {
         $(this).closest('.modal').fadeOut();
     });
+
 </script>

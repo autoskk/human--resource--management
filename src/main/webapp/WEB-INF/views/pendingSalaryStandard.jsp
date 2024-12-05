@@ -91,6 +91,5 @@
   <button type="button" class="btn" onclick="updateStatus('待登记')">拒绝</button>
   <button type="button" class="btn" onclick="window.location.href='/salary-standards'">返回</button>
 </form>
-
 </body>
 </html>

@@ -29,7 +29,6 @@ public interface EmployeeMapper {
 
     @Delete("DELETE FROM employee_records WHERE record_id = #{recordId}")
     void deleteEmployee(String recordId);
-
     @Select("SELECT * FROM employee_records WHERE status = '待复核'")
     List<EmployeeRecord> findPendingEmployees();
 
@@ -71,7 +70,7 @@ public interface EmployeeMapper {
     // 计算特定组织下员工的基本薪资总额
     @Select("SELECT SUM(ss.base_salary) " +
             "FROM employee_records er " +
-            "JOIN salary_standard ss ON er.salary_standard = ss.salary_standard_id " +
+            "JOIN salary_standard ss ON er.salary_standard_id = ss.salary_standard_id " +
             "WHERE er.level_1_id = #{level1Id} " +
             "AND er.level_2_id = #{level2Id} " +
             "AND er.level_3_id = #{level3Id}")

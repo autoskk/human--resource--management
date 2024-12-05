@@ -1,9 +1,11 @@
 package com.example.controller;
 
-import com.example.pojo.EmployeeCompensation;
-import com.example.pojo.SalaryDistribution;
+import com.example.pojo.*;
 import com.example.service.EmployeeCompensationService;
 import com.example.service.SalaryDistributionService;
+import com.example.service.SalaryStandardService;
+import com.example.service.impl.EmployeeService;
+import com.example.service.impl.Level1OrganizationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/salary-distributions")
@@ -23,12 +26,16 @@ public class SalaryDistributionController {
     private SalaryDistributionService salaryDistributionService;
     @Autowired
     private EmployeeCompensationService employeeCompensationService;
+    @Autowired
+    private Level1OrganizationService level1OrganizationService;
+    @Autowired
+    private EmployeeService employeeService;
+    @Autowired
+    private SalaryStandardService salaryStandardService;
 
     // 获取所有薪酬
     @GetMapping
     public String getAllSalaryDistribution(Model model) {
-
-
 
 
         List<SalaryDistribution> allSalaryDistribution = salaryDistributionService.getAllSalaryDistributions();
@@ -60,13 +67,14 @@ public class SalaryDistributionController {
 
     // 根据 ID 获取薪资分配
     @GetMapping("/{id}")
-    public String getSalaryDistribution(@PathVariable Integer id, Model model) {
+    public String getSalaryDistribution(@PathVariable String id, Model model) {
         List<SalaryDistribution> salaryDistribution = salaryDistributionService.getSalaryDistributionById(id);
         model.addAttribute("salaryDistribution", salaryDistribution);
         return "salaryDistributionManagement"; // 返回薪资分配详情的视图
     }
+
     @GetMapping("/getDistribution/{id}")
-    public ResponseEntity<SalaryDistribution> getSalaryDistributionById(@PathVariable Integer id) {
+    public ResponseEntity<SalaryDistribution> getSalaryDistributionById(@PathVariable String id) {
         SalaryDistribution salaryDistribution = salaryDistributionService.getDistributionById(id);
         System.out.println(salaryDistribution);
         if (salaryDistribution != null) {
@@ -78,7 +86,7 @@ public class SalaryDistributionController {
 
     // 更新薪资分配
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateSalaryDistribution(@PathVariable Integer id, @RequestBody SalaryDistribution salaryDistribution) {
+    public ResponseEntity<String> updateSalaryDistribution(@PathVariable String id, @RequestBody SalaryDistribution salaryDistribution) {
         try {
             System.out.println(salaryDistribution);
             salaryDistribution.setDistributionID(id); // 确保 ID 一致
@@ -92,7 +100,7 @@ public class SalaryDistributionController {
 
     // 删除薪资分配
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteSalaryDistribution(@PathVariable Integer id) {
+    public ResponseEntity<String> deleteSalaryDistribution(@PathVariable String id) {
         try {
             employeeCompensationService.deleteDistributionEmployeeCompensation(id);
             salaryDistributionService.deleteSalaryDistribution(id);
@@ -107,19 +115,108 @@ public class SalaryDistributionController {
     public String getDistributionsByStatus(@PathVariable String status, Model model) {
         List<SalaryDistribution> salaryDistributions = salaryDistributionService.getDistributionsByStatus(status);
         model.addAttribute("salaryDistribution", salaryDistributions);
+        List<Level1Organization> level1Organizations = level1OrganizationService.getAllLevel1Organizations();
+        model.addAttribute("level1Organizations", level1Organizations);
         return "salaryDistributionManagement"; // 返回待处理薪资分配的视图
     }
-
     // 根据 ID 或关键字搜索薪酬标准
     @GetMapping("/search")
     public String searchSalaryDistributions(
-            @RequestParam(required = false) Integer distributionID,
+            @RequestParam(required = false) String distributionID,
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date startTime,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date endTime,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String time,
+            @RequestParam(required = false) Integer levelOneId,
+            @RequestParam(required = false) Integer levelTwoId,
+            @RequestParam(required = false) Integer levelThreeId,
+
             Model model) {
-        List<SalaryDistribution> results = salaryDistributionService.searchSalaryDistributions(distributionID, keyword, startTime, endTime);
-        model.addAttribute("salaryDistribution", results); // 将结果添加到模型中
+        System.out.println("distributionID:" + distributionID);
+        // 获取一级、二级、三级机构的编号并转换为两位数字格式
+        List<Level1Organization> level1Organizations = level1OrganizationService.getAllLevel1Organizations();
+        model.addAttribute("level1Organizations", level1Organizations);
+
+        List<SalaryDistribution> salaryDistributions = salaryDistributionService.getDistributionsByStatus(status);
+        List<SalaryDistribution> results = salaryDistributionService.searchSalaryDistributions(distributionID, keyword, startTime, endTime, levelOneId, levelTwoId, levelThreeId, time);
+
+        // 获取交集
+        List<SalaryDistribution> intersection = salaryDistributions.stream()
+                .filter(results::contains) // 仅保留在 results 中存在的元素
+                .collect(Collectors.toList());
+
+        model.addAttribute("salaryDistribution", intersection); // 将结果添加到模型中
+
         return "salaryDistributionManagement"; // 返回相应的 JSP 视图名
+
     }
+
+    @GetMapping("/getDistributionId")
+    public ResponseEntity<String> getSalaryDistributionById(@RequestParam Integer level1Id, @RequestParam Integer level2Id, @RequestParam Integer level3Id) {
+        String distributionId = salaryDistributionService.generateId(level1Id, level2Id, level3Id);
+        System.out.println(distributionId);
+        if (distributionId != null) {
+            return ResponseEntity.ok(distributionId); // 200 OK with data
+        } else {
+            return ResponseEntity.notFound().build(); // 404 Not Found
+        }
+    }
+
+    @GetMapping("/import/{time}")
+    public String ImportSalaryDistribution(@PathVariable String time, Model model) {
+//        salaryDistributionService.CreateSalaryDistributionByTime(time);
+        List<EmployeeRecord> employeeRecords = employeeService.getAllEmployees();
+//        System.out.println(employeeRecords);
+//
+        for (EmployeeRecord employeeRecord : employeeRecords) {
+            synchronized (this) { // 同步块，确保此块在同一时间只能被一个线程访问
+                String distributionID = salaryDistributionService.generateId(employeeRecord.getLevel1Id(), employeeRecord.getLevel2Id(), employeeRecord.getLevel3Id());
+                String newDistributionID = time + distributionID.substring(6);
+                System.out.println(newDistributionID);
+
+                SalaryDistribution distribution = salaryDistributionService.getDistributionById(newDistributionID);
+                SalaryStandard salaryStandard = salaryStandardService.getStandard(employeeRecord.getSalaryStandardId());
+
+                if (distribution != null) {
+                    distribution.setNumberOfEmployees(distribution.getNumberOfEmployees() + 1);
+                    distribution.setTotalBaseSalary(distribution.getTotalBaseSalary() + salaryStandard.getBaseSalary());
+                    salaryDistributionService.updateSalaryDistribution(distribution);
+                } else {
+                    salaryDistributionService.saveSalaryDistribution(new SalaryDistribution(
+                            newDistributionID,
+                            employeeRecord.getLevel1Id(),
+                            employeeRecord.getLevel2Id(),
+                            employeeRecord.getLevel3Id(),
+                            1, // 初始员工数量为1
+                            salaryStandard.getBaseSalary(), // 初始化总薪资
+                            "待登记",
+                            null,
+                            null
+                    ));
+                }
+
+                EmployeeCompensation employeeCompensation = employeeCompensationService.getEmployeeCompensationById(employeeRecord.getRecordId(), newDistributionID);
+                if (employeeCompensation == null) {
+                    employeeCompensationService.saveEmployeeCompensation(new EmployeeCompensation(
+                            employeeRecord.getRecordId(),
+                            employeeRecord.getSalaryStandardId(),
+                            0.0,
+                            0.0,
+                            0.0,
+                            newDistributionID,
+                            salaryStandard.getBaseSalary(),
+                            salaryStandard.getPensionInsurance(),
+                            salaryStandard.getMedicalInsurance(),
+                            salaryStandard.getUnemploymentInsurance(),
+                            salaryStandard.getHousingFund()
+                    ));
+                }
+            }
+        }
+        List<SalaryDistribution> salaryDistribution = salaryDistributionService.getSalaryDistributionById(time);
+        model.addAttribute("salaryDistribution", salaryDistribution);
+        return "salaryDistributionManagement"; // 返回薪资分配详情的视图
+    }
+
 }

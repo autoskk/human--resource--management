@@ -14,14 +14,19 @@ public class EmployeeCompensationServiceImpl implements EmployeeCompensationServ
     @Autowired
     private EmployeeCompensationMapper employeeCompensationMapper;
 
+
     @Override
     public void saveEmployeeCompensation(EmployeeCompensation employeeCompensation) {
         employeeCompensationMapper.insertEmployeeCompensation(employeeCompensation);
     }
 
     @Override
-    public EmployeeCompensation getEmployeeCompensationById(String employeeId,Integer distributionId) {
+    public EmployeeCompensation getEmployeeCompensationById(String employeeId,String distributionId) {
         return employeeCompensationMapper.selectByEmployeeIdAndDistributionId(employeeId,distributionId);
+    }
+    @Override
+    public List<EmployeeCompensation> getEmployeeCompensationByEmployeeId(String employeeId) {
+        return employeeCompensationMapper.selectByEmployeeId(employeeId);
     }
 
     @Override
@@ -30,7 +35,7 @@ public class EmployeeCompensationServiceImpl implements EmployeeCompensationServ
     }
 
     @Override
-    public void deleteEmployeeCompensation(String employeeId,Integer distributionId) {
+    public void deleteEmployeeCompensation(String employeeId,String distributionId) {
         employeeCompensationMapper.deleteById(employeeId,distributionId);
     }
 
@@ -40,12 +45,12 @@ public class EmployeeCompensationServiceImpl implements EmployeeCompensationServ
     }
 
     @Override
-    public List<EmployeeCompensation> getDistributionEmployeeCompensations(Integer distributionId) {
+    public List<EmployeeCompensation> getDistributionEmployeeCompensations(String distributionId) {
         return employeeCompensationMapper.selectByDistributionId(distributionId);
     }
 
     @Override
-    public void deleteDistributionEmployeeCompensation(Integer distributionId) {
+    public void deleteDistributionEmployeeCompensation(String distributionId) {
         employeeCompensationMapper.deleteByDistributionId(distributionId);
     }
 

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/salary-standards")
@@ -22,7 +23,6 @@ public class SalaryStandardController {
     private SalaryStandardService salaryStandardService;
     @Autowired
     private UserService userService;
-
     // 创建薪酬标准
     @PostMapping("/create")
     public ResponseEntity<String> createSalaryStandard(@RequestBody SalaryStandard salaryStandard) {
@@ -36,7 +36,6 @@ public class SalaryStandardController {
                     .body("薪酬标准创建失败: " + e.getMessage());
         }
     }
-
     // 根据 ID 或关键字搜索薪酬标准
     @GetMapping("/search")
     public String searchSalaryStandards(
@@ -44,10 +43,18 @@ public class SalaryStandardController {
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date  startTime,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date endTime,
+            @RequestParam(required = false)  String status,
             Model model) {
+        List<SalaryStandard> salaryStandards = salaryStandardService.findApprovedSalaryStandards(status);
         List<SalaryStandard> results = salaryStandardService.searchSalaryStandards(salaryStandardID, keyword, startTime, endTime);
-        model.addAttribute("salaryStandards", results); // 将结果添加到模型中
-        return "redirect:/salaryStandardManagement"; // 返回相应的 JSP 视图名，比如 "salaryStandards.jsp"
+
+        // 获取交集
+        List<SalaryStandard> intersection = salaryStandards.stream()
+                .filter(results::contains) // 仅保留在 results 中存在的元素
+                .collect(Collectors.toList());
+
+        model.addAttribute("salaryStandards", intersection); // 将结果添加到模型中
+        return "salaryStandardManagement"; // 返回相应的 JSP 视图名，比如 "salaryStandards.jsp"
     }
 
     // 根据状态查询薪酬标准
@@ -56,6 +63,15 @@ public class SalaryStandardController {
         List<SalaryStandard> standards = salaryStandardService.findByStatus(status);
         model.addAttribute("salaryStandards", standards); // 将结果添加到模型中
         return "salaryStandardManagement"; // 返回相应的 JSP 视图名
+    }
+    @GetMapping("/getByStatus/{status}")
+    public ResponseEntity<List<SalaryStandard>> GetByStatus(@PathVariable String status, Model model) {
+        List<SalaryStandard> standards = salaryStandardService.findByStatus(status);
+        if (standards == null) {
+            return ResponseEntity.notFound().build(); // Return 404 Not Found if standard doesn't exist
+        }
+
+        return ResponseEntity.ok(standards);
     }
 
     // 根据登记时间范围查询薪酬标准
@@ -66,7 +82,7 @@ public class SalaryStandardController {
             Model model) {
         List<SalaryStandard> standards = salaryStandardService.findByRegistrationTimeBetween(startTime, endTime);
         model.addAttribute("salaryStandards", standards); // 将结果添加到模型中
-        return "redirect:/salaryStandardManagement"; // 返回相应的 JSP 视图名
+        return "salaryStandardManagement"; // 返回相应的 JSP 视图名
     }
 
     // 根据基础工资范围查询薪酬标准
@@ -77,7 +93,7 @@ public class SalaryStandardController {
             Model model) {
         List<SalaryStandard> standards = salaryStandardService.findByBaseSalaryBetween(minSalary, maxSalary);
         model.addAttribute("salaryStandards", standards); // 将结果添加到模型中
-        return "redirect:/salaryStandardManagement"; // 返回相应的 JSP 视图名
+        return "salaryStandardManagement"; // 返回相应的 JSP 视图名
     }
 
     // 获取所有薪酬标准

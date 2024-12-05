@@ -27,7 +27,7 @@
                 window.location.href = '/salary-distributions/status/待复核';
             }
         } else {
-            alert('无法识别用户，请重新登录。');
+            alert('没有权限！');
         }
     });
 </script>
