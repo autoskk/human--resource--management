@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>人力资源档案复核</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
@@ -21,11 +22,11 @@
       vertical-align: middle; /* 位置垂直对齐 */
     }
     .btn-review {
-      background-color: #28a745;
+      background-color: #007bff;
       color: white;
     }
     .btn-review:hover {
-      background-color: #218838;
+      background-color: #0727f1;
     }
   </style>
 
@@ -66,6 +67,7 @@
 <body>
 
 <div class="container mt-5">
+  <a class="btn btn-secondary mb-4" href="${pageContext.request.contextPath}/employee/home"><i class="fas fa-arrow-left"></i> 返回主页</a>
   <h1>人力资源档案复核</h1>
 
   <table class="table table-striped">
@@ -99,7 +101,7 @@
     </tbody>
   </table>
 
-  <a href="${pageContext.request.contextPath}/employee/home" class="btn btn-secondary">返回主页</a>
+
 </div>
 
 </body>
