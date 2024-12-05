@@ -13,10 +13,8 @@ import java.util.Date;
 @AllArgsConstructor
 @Table(name = "salary_distribution")
 public class SalaryDistribution {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer distributionID; // 薪酬发放单编号
+    private String distributionID; // 薪酬发放单编号
 
     @Column(name = "level_1_id", nullable = false)
     private Integer levelOneId; // 一级机构 ID
@@ -29,7 +27,6 @@ public class SalaryDistribution {
 
     @Column(nullable = false)
     private Integer numberOfEmployees; // 人数
-
     @Column(name = "total_base_salary", nullable = false)
     private Double totalBaseSalary; // 基本薪酬总额
 

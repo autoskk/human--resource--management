@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-
 @Entity
 @Data
 @NoArgsConstructor
@@ -16,7 +15,6 @@ public class EmployeeCompensation {
     @Id
     @Column(name = "employee_id", length = 20)
     private String employeeId; // 员工编号
-
 
     @Column(name = "salary_standard_id", nullable = false) // 关联的薪酬标准 ID
     private Integer salaryStandardID; // 关联的薪酬标准
@@ -31,7 +29,7 @@ public class EmployeeCompensation {
     private Double deductions = 0.00; // 应扣奖金
 
     @Column(name = "distribution_id") // 关联的薪酬发放单号
-    private Integer distributionId; // 对应的薪酬发放单号
+    private String distributionId; // 对应的薪酬发放单号
 
     // 计算字段不需要在这里定义，可以通过服务层来计算
     @Transient

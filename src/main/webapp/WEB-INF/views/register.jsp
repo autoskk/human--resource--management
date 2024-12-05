@@ -1,27 +1,100 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
+  <meta charset="UTF-8">
   <title>用户注册</title>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      padding: 0;
+      margin: 0;
+    }
+    .container {
+      max-width: 400px;
+      margin: 50px auto; /* 上下居中 */
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin: 10px 0 5px;
+      color: #555;
+    }
+    input[type="text"], input[type="password"], select {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+      transition: border-color 0.3s; /* 添加过渡效果 */
+    }
+    input:focus, select:focus {
+      border-color: #007bff; /* 聚焦时的边框颜色 */
+      outline: none; /* 移除默认轮廓 */
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 16px;
+      transition: background-color 0.3s; /* 添加过渡效果 */
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .btn {
+      background-color: #6c757d;
+    }
+    .btn:hover {
+      background-color: #5a6268;
+    }
+    #registerMessage {
+      text-align: center;
+      margin-top: 15px;
+      color: #d9534f; /* Bootstrap危险色 */
+      font-weight: bold; /* 加粗文本 */
+    }
+    @media (max-width: 400px) {
+      .container {
+        padding: 15px; /* 小屏幕时少一点内边距 */
+      }
+    }
+  </style>
 </head>
 <body>
-<h1>用户注册</h1>
-<form id="registerForm">
-  <label for="username">用户名:</label>
-  <input type="text" id="username" name="username" required>
-  <br>
-  <label for="password">密码:</label>
-  <input type="password" id="password" name="password" required>
-  <br>
-  <label for="role">角色:</label>
-  <select id="role" name="role" required>
-    <!-- 角色选项将通过JS动态填充 -->
-  </select>
-  <br>
-  <button type="submit">注册</button>
-</form>
-<div id="registerMessage"></div>
+<div class="container">
+  <h1>用户注册</h1>
+  <form id="registerForm">
+    <label for="username">用户名:</label>
+    <input type="text" id="username" name="username" required>
+
+    <label for="password">密码:</label>
+    <input type="password" id="password" name="password" required>
+
+    <label for="role">角色:</label>
+    <select id="role" name="role" required>
+      <!-- 角色选项将通过JS动态填充 -->
+    </select>
+    <button type="submit">注册</button>
+    <button type="button" class="btn" onclick="window.location.href='/login'">返回</button>
+  </form>
+  <div id="registerMessage"></div>
+</div>
 
 <script>
   $(document).ready(function(){

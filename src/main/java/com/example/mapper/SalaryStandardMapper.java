@@ -12,7 +12,6 @@ import java.util.List;
 
 @Mapper
 public interface SalaryStandardMapper extends BaseMapper<SalaryStandard> {
-
     // 根据状态查询所有薪酬标准
     @Select("SELECT * FROM salary_standard WHERE status = #{status}")
     List<SalaryStandard> findByStatus(String status);
@@ -62,7 +61,6 @@ public interface SalaryStandardMapper extends BaseMapper<SalaryStandard> {
     SalaryStandard selectById(Integer salaryStandardID);
     @Update("UPDATE hrm.salary_standard SET status = '待复核' WHERE salary_standard_id = #{salaryStandardID}")
     void updateStatus(Integer salaryStandardID);
-
     @Select("SELECT * FROM salary_standard WHERE status = '已复核'")
     List<SalaryStandard> findApprovedSalaryStandards();
 

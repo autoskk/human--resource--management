@@ -13,14 +13,13 @@ public interface EmployeeCompensationMapper extends BaseMapper<EmployeeCompensat
 
     // 根据发放单Id查找员工薪酬
     @Select("SELECT * FROM employee_compensation WHERE distribution_id = #{distributionId}")
-    List<EmployeeCompensation> selectByDistributionId(@Param("distributionId") Integer distributionId);
-
+    List<EmployeeCompensation> selectByDistributionId(@Param("distributionId") String distributionId);
     // 根据Id查找员工薪酬
     @Select("SELECT * FROM employee_compensation WHERE employee_id = #{employeeId}")
-    EmployeeCompensation selectByEmployeeId(@Param("employeeId") String employeeId);
+    List<EmployeeCompensation> selectByEmployeeId(@Param("employeeId") String employeeId);
 
     @Select("Select * FROM employee_compensation WHERE employee_id = #{employeeId} AND distribution_id = #{distributionId}")
-    EmployeeCompensation selectByEmployeeIdAndDistributionId(@Param("employeeId") String employeeId , @Param("distributionId")Integer distributionId);
+    EmployeeCompensation selectByEmployeeIdAndDistributionId(@Param("employeeId") String employeeId , @Param("distributionId")String distributionId);
 
     // 查询所有员工薪酬信息
     @Select("SELECT * FROM employee_compensation")
@@ -32,7 +31,6 @@ public interface EmployeeCompensationMapper extends BaseMapper<EmployeeCompensat
     int insertEmployeeCompensation(EmployeeCompensation compensation);
 
 
-
     // 更新员工薪酬信息
     @Update("UPDATE employee_compensation SET salary_standard_id=#{salaryStandardID}, allowances = #{allowances}, bonus = #{bonus}, deductions = #{deductions} " +
             "WHERE employee_id = #{employeeId} AND distribution_id = #{distributionId}")
@@ -41,10 +39,10 @@ public interface EmployeeCompensationMapper extends BaseMapper<EmployeeCompensat
 
     // 删除员工薪酬信息
     @Delete("DELETE FROM employee_compensation WHERE employee_id = #{employeeId} AND distribution_id = #{distributionId}")
-    int deleteById(@Param("employeeId") String employeeId , @Param("distributionId")Integer distributionId);
+    int deleteById(@Param("employeeId") String employeeId , @Param("distributionId")String distributionId);
 
     @Delete("DELETE FROM employee_compensation WHERE distribution_id = #{distributionId}")
-    int deleteByDistributionId(@Param("distributionId") Integer distributionId);
+    int deleteByDistributionId(@Param("distributionId") String distributionId);
 
 
 

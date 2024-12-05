@@ -6,13 +6,13 @@ import java.util.List;
 
 public interface EmployeeCompensationService {
     void saveEmployeeCompensation(EmployeeCompensation employeeCompensation);
-    EmployeeCompensation getEmployeeCompensationById(String employeeId,Integer distributionId);
+    EmployeeCompensation getEmployeeCompensationById(String employeeId,String distributionId);
+    List<EmployeeCompensation> getEmployeeCompensationByEmployeeId(String employeeId);
     void updateEmployeeCompensation(EmployeeCompensation employeeCompensation);
-    void deleteEmployeeCompensation(String employeeId,Integer distributionId);
+    void deleteEmployeeCompensation(String employeeId,String distributionId);
 
     List<EmployeeCompensation> getAllEmployeeCompensations();
 
-    List<EmployeeCompensation> getDistributionEmployeeCompensations(Integer distributionId);
-
-    void deleteDistributionEmployeeCompensation(Integer distributionId);
+    List<EmployeeCompensation> getDistributionEmployeeCompensations(String distributionId);
+    void deleteDistributionEmployeeCompensation(String distributionId);
 }
