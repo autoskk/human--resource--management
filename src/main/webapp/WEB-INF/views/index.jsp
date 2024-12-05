@@ -6,6 +6,9 @@
 <head>
   <meta charset="utf-8">
   <title>人力资源管理系统</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <style media="screen">
     a:link {
       text-decoration: none;
@@ -142,9 +145,10 @@
 
     .content {
       margin-left: 250px;
-      padding: 20px;
+      padding: 40px;
+      padding-top: 120px; /* 添加这个属性来保障内容不被导航栏覆盖 */
       background: #ffffff; /* 内容区域背景颜色 */
-      height: 100vh;
+      height: calc(100vh - 100px); /* 减去导航栏高度，确保内容区域不溢出 */
       transition: 0.5s;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 添加阴影 */
     }
@@ -216,9 +220,13 @@
       text-decoration: underline;
       color: #004d40;
     }
+
+    h2 {
+      text-align: center;
+      color: #007bff;
+    }
   </style>
 
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
 </head>
 
 <body>
@@ -289,7 +297,6 @@
   <br><br><br>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
   function toggleSubmenu(id) {
     var submenu = document.getElementById(id);
@@ -326,6 +333,7 @@
     $('#createdBy').text('');
     $('#logoutButton').text('登录');
     alert("已登出");
+    window.location.href="/index";
   }
 
   function checkAccess(action) {

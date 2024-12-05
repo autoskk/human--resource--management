@@ -93,6 +93,7 @@ public class SalaryDistributionController {
             salaryDistributionService.updateSalaryDistribution(salaryDistribution);
             return ResponseEntity.ok("薪资分配更新成功"); // 200 OK
         } catch (Exception e) {
+            System.out.println(e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("薪资分配更新失败: " + e.getMessage());
         }

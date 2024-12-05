@@ -1,15 +1,224 @@
+<!DOCTYPE html>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<html>
+<html lang="zh-CN" dir="ltr">
+
 <head>
+    <meta charset="utf-8">
     <title>创建薪资标准</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <style>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style media="screen">
+        a:link {
+            text-decoration: none;
+        }
+
         body {
-            font-family: Arial, sans-serif;
             margin: 0;
+            padding: 0;
+            font-family: "Roboto", sans-serif;
+            background-color: #f8f9fa; /* 轻微背景色，提供视觉振奋 */
+        }
+
+        header {
+            position: fixed;
+            background: #ffffff; /* 将导航栏背景设置为白色 */
             padding: 20px;
-            background-color: #f4f4f4;
+            width: 100%;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 添加阴影效果 */
+            z-index: 1;
+        }
+
+        .left_area h3 {
+            color: #333; /* 改为较深的颜色以适应新的背景 */
+            margin: 0;
+            text-transform: uppercase;
+            font-size: 22px;
+            font-weight: 900;
+        }
+
+        .logout_btn {
+            padding: 5px;
+            background: #19B3D3; /* 保持颜色，以突出显示 */
+            text-decoration: none;
+            float: right;
+            margin-top: -30px;
+            margin-right: 40px;
+            border-radius: 2px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #fff;
+            transition: 0.5s;
+            cursor: pointer;
+        }
+
+        .logout_btn:hover {
+            background: #0B87A6;
+        }
+
+        .sidebar {
+            background: #ffffff; /* 将侧边栏背景设置为白色 */
+            margin-top: 70px;
+            padding-top: 30px;
+            position: fixed;
+            left: 0;
+            width: 250px;
+            height: 100%;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* 添加阴影与立体感 */
+            transition: 0.5s;
+        }
+
+        .sidebar .profile_image {
+            width: 100px;
+            height: 100px;
+            border-radius: 100px;
+            margin-bottom: 10px;
+        }
+
+        .sidebar h4 {
+            color: #333; /* 统一文本颜色 */
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        .sidebar a {
+            color: #333; /* 改为较深的颜色以适应新的背景 */
+            display: block;
+            width: 100%;
+            line-height: 60px;
+            text-decoration: none;
+            padding-left: 40px;
+            box-sizing: border-box;
+            transition: 0.5s;
+        }
+
+        .sidebar a:hover {
+            background: #19B3D3; /* 保持原有悬停效果 */
+            color: #fff; /* 悬停背景下文本颜色变为白色 */
+        }
+
+        label #sidebar_btn {
+            z-index: 1;
+            color: #333; /* 改为较深的颜色以适应新的背景 */
+            position: fixed;
+            cursor: pointer;
+            left: 300px; /* 根据布局需调整 */
+            font-size: 20px;
+            margin: 5px 0;
+            transition: 0.5s;
+        }
+
+        label #sidebar_btn:hover {
+            color: #19B3D3;
+        }
+
+        #check {
+            display: none;
+        }
+
+        /* 收缩侧边栏的样式 */
+        #check:checked ~ .sidebar {
+            left: -190px; /* 收缩的宽度 */
+        }
+
+        #check:checked ~ .sidebar a span {
+            display: none; /* 隐藏文字 */
+        }
+
+        #check:checked ~ .sidebar a {
+            font-size: 20px;
+            margin-left: 170px; /* 调整以保持图标的位置 */
+            width: 80px; /* 调整宽度 */
+        }
+
+        /* 隐藏子菜单 */
+        .submenu {
+            display: none;
+            padding-left: 20px;
+        }
+
+        .submenu a {
+            line-height: 40px; /* 子菜单项的高度 */
+            color: #333; /* 文本颜色 */
+        }
+
+        .content {
+            margin-left: 250px;
+            padding: 40px;
+            padding-top: 120px; /* 添加这个属性来保障内容不被导航栏覆盖 */
+            background: #ffffff; /* 内容区域背景颜色 */
+            height: calc(100vh - 100px); /* 减去导航栏高度，确保内容区域不溢出 */
+            transition: 0.5s;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 添加阴影 */
+        }
+
+        #check:checked ~ .content {
+            margin-left: 60px; /* 内容区的 margin 调整 */
+        }
+
+        /* 增加模块描述样式 */
+        .module-description {
+            background: #f9f9f9; /* 模块描述背景颜色 */
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+            transition: box-shadow 0.3s;
+        }
+
+        .module-description:hover {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        h2 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        h3 {
+            color: #2c3e50;
+            font-size: 20px;
+            margin-top: 30px;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #19B3D3;
+            padding-bottom: 5px;
+        }
+
+        p {
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        ul {
+            list-style-type: disc;
+            padding-left: 20px;
+        }
+
+        .quick-actions {
+            background: #e0f7fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        .quick-actions li {
+            margin: 10px 0;
+            font-size: 16px;
+        }
+
+        .quick-actions a {
+            color: #00796b;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .quick-actions a:hover {
+            text-decoration: underline;
+            color: #004d40;
         }
         h2 {
             text-align: center;
@@ -18,12 +227,30 @@
             font-size: 24px; /* 增大标题字体 */
         }
         form {
-            background: white;
-            padding: 30px; /* 增加内边距 */
-            border-radius: 10px;  /* 更明显的圆角 */
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            max-width: 600px; /* 设置表单最大宽度 */
-            margin: 0 auto; /* 居中表单 */
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .form-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px; /* 控制两列之间的间距 */
+        }
+
+        .form-group {
+            flex: 1; /* 使每个输入部分均分 */
+            min-width: 200px; /* 设置最小宽度 */
+        }
+
+        .search-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px; /* 表单各部分间隔 */
         }
         label {
             display: block;
@@ -84,113 +311,255 @@
             }
         }
     </style>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        // 计算五险一金
-        function calculateInsurance() {
-            const baseSalary = parseFloat(document.getElementById('baseSalary').value) || 0;
 
-            const pensionInsurance = (baseSalary * 0.08).toFixed(2);
-            const medicalInsurance = (baseSalary * 0.02 + 3).toFixed(2);
-            const unemploymentInsurance = (baseSalary * 0.005).toFixed(2);
-            const housingFund = (baseSalary * 0.08).toFixed(2);
+</head>
 
-            document.getElementById('pensionInsurance').value = pensionInsurance;
-            document.getElementById('medicalInsurance').value = medicalInsurance;
-            document.getElementById('unemploymentInsurance').value = unemploymentInsurance;
-            document.getElementById('housingFund').value = housingFund;
-        }
+<body>
+<input type="checkbox" id="check">
+<header>
+    <label for="check">
+        <i class="fas fa-bars" id="sidebar_btn"></i>
+    </label>
+    <div class="left_area">
+        <h3>人力资源管理系统</h3>
+    </div>
+    <div class="right_area">
+        <a href="javascript:void(0);" class="logout_btn" id="logoutButton" onclick="handleLoginLogout()">登录</a>
+    </div>
+</header>
 
-        // 页面加载时获取薪酬经理列表
-        $(document).ready(function() {
-            // 通过 AJAX 获取薪酬经理列表
-            $.ajax({
-                url: '/users/roleId/6',
-                type: 'GET',
-                success: function(managers) {
-                    managers.forEach(function(manager) {
-                        $('#creator').append(new Option(manager.userName, manager.userName));
-                    });
-                },
-                error: function() {
-                    alert('无法加载薪酬经理列表。');
-                }
-            });
+<div class="sidebar">
+    <div style="text-align: center;">
+        <img src="https://img95.699pic.com/xsj/10/gk/q8.jpg!/fh/300" class="profile_image" alt="">
+        <h4 id="createdBy"></h4>
+    </div>
 
-            // 设置当前用户信息
-            const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
-            if (currentUser) {
-                document.getElementById('registrar').value = currentUser.userName; // 登记人只读
+    <a href="${pageContext.request.contextPath}/employee/home"><i class="fas fa-home"></i><span>首页</span></a>
+
+    <a href="javascript:void(0);" onclick="toggleSubmenu('hrManagement');">
+        <i class="fas fa-address-card"></i><span>人力资源档案管理</span></a>
+    <div id="hrManagement" class="submenu">
+        <a href="javascript:void(0);" onclick="checkAccess('register')">档案登记</a>
+        <a href="javascript:void(0);" onclick="checkAccess('list')">档案列表</a>
+        <a href="javascript:void(0);" onclick="checkAccess('review')">档案复核</a>
+    </div>
+
+    <a href="javascript:void(0);" onclick="toggleSubmenu('salaryManagement');">
+        <i class="fas fa-money-check"></i><span>薪酬管理</span></a>
+    <div id="salaryManagement" class="submenu">
+        <a href="javascript:void(0);" onclick="checkAccess('salaryDistributionManagement')">薪酬发放管理</a>
+        <a href="javascript:void(0);" onclick="checkAccess('salaryStandardManagement')">薪酬标准管理</a>
+    </div>
+</div>
+
+<div class="content">
+    <h2>创建薪资标准</h2>
+    <form onsubmit="handleSubmit(event)">
+        <div class="form-row">
+            <div class="form-group">
+                <label for="standardName">薪资标准名称:</label>
+                <input type="text" id="standardName" name="standardName" required>
+            </div>
+            <div class="form-group">
+                <label for="creator">制定人:</label>
+                <select id="creator" name="creator" required>
+                    <option value="">请选择薪酬经理</option>
+                    <!-- 薪酬经理列表将通过JS动态填充 -->
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="registrar">登记人:</label>
+                <input type="text" id="registrar" name="registrar" readonly>
+            </div>
+            <div class="form-group">
+                <div class="button-group">
+                    <button type="submit" class="btn">提交</button>
+                    <button type="button" class="btn" onclick="window.location.href='/salary-standards'">返回</button>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="baseSalary">基本工资:</label>
+                <input type="number" id="baseSalary" name="baseSalary" step="0.01" required oninput="calculateInsurance()">
+            </div>
+            <div class="form-group">
+                <label for="pensionInsurance">养老金:</label>
+                <input type="number" id="pensionInsurance" name="pensionInsurance" step="0.01" readonly>
+
+            </div>
+            <div class="form-group">
+                <label for="medicalInsurance">医疗保险:</label>
+                <input type="number" id="medicalInsurance" name="medicalInsurance" step="0.01" readonly>
+            </div>
+            <div class="form-group">
+                <label for="unemploymentInsurance">失业保险:</label>
+                <input type="number" id="unemploymentInsurance" name="unemploymentInsurance" step="0.01" readonly>
+
+            </div>
+            <div class="form-group">
+                <label for="housingFund">住房公积金:</label>
+                <input type="number" id="housingFund" name="housingFund" step="0.01" readonly>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+
+    // 计算五险一金
+    function calculateInsurance() {
+        const baseSalary = parseFloat(document.getElementById('baseSalary').value) || 0;
+
+        const pensionInsurance = (baseSalary * 0.08).toFixed(2);
+        const medicalInsurance = (baseSalary * 0.02 + 3).toFixed(2);
+        const unemploymentInsurance = (baseSalary * 0.005).toFixed(2);
+        const housingFund = (baseSalary * 0.08).toFixed(2);
+
+        document.getElementById('pensionInsurance').value = pensionInsurance;
+        document.getElementById('medicalInsurance').value = medicalInsurance;
+        document.getElementById('unemploymentInsurance').value = unemploymentInsurance;
+        document.getElementById('housingFund').value = housingFund;
+    }
+
+    // 页面加载时获取薪酬经理列表
+    $(document).ready(function() {
+        // 通过 AJAX 获取薪酬经理列表
+        $.ajax({
+            url: '/users/roleId/6',
+            type: 'GET',
+            success: function(managers) {
+                managers.forEach(function(manager) {
+                    $('#creator').append(new Option(manager.userName, manager.userName));
+                });
+            },
+            error: function() {
+                alert('无法加载薪酬经理列表。');
             }
         });
 
-        // 处理表单提交
-        function handleSubmit(event) {
-            event.preventDefault(); // 阻止默认提交
-
-            const formData = {
-                standardName: document.getElementById('standardName').value,
-                creator: document.getElementById('creator').value, // 从下拉框获取值
-                registrar: document.getElementById('registrar').value,
-                baseSalary: parseFloat(document.getElementById('baseSalary').value) || 0.00,
-            };
-
-            fetch('/salary-standards/create', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData)
-            })
-                .then(response => {
-                    if (response.ok) {
-                        alert('薪酬标准创建成功');
-                        window.location.href = '/salary-standards';
-                    } else {
-                        return response.text().then(text => {
-                            alert('薪酬标准创建失败: ' + text);
-                        });
-                    }
-                })
-                .catch(error => alert('薪酬标准创建失败: ' + error.message));
+        // 设置当前用户信息
+        const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+        if (currentUser) {
+            document.getElementById('registrar').value = currentUser.userName; // 登记人只读
         }
-    </script>
-</head>
-<body>
-<h2>创建薪资标准</h2>
-<form onsubmit="handleSubmit(event)">
-    <label for="standardName">薪资标准名称:</label>
-    <input type="text" id="standardName" name="standardName" required>
+    });
 
-    <label for="creator">制定人:</label>
-    <select id="creator" name="creator" required>
-        <option value="">请选择薪酬经理</option>
-        <!-- 薪酬经理列表将通过JS动态填充 -->
-    </select>
+    // 处理表单提交
+    function handleSubmit(event) {
+        event.preventDefault(); // 阻止默认提交
 
-    <label for="registrar">登记人:</label>
-    <input type="text" id="registrar" name="registrar" readonly>
+        const formData = {
+            standardName: document.getElementById('standardName').value,
+            creator: document.getElementById('creator').value, // 从下拉框获取值
+            registrar: document.getElementById('registrar').value,
+            baseSalary: parseFloat(document.getElementById('baseSalary').value) || 0.00,
+        };
 
-    <label for="baseSalary">基本工资:</label>
-    <input type="number" id="baseSalary" name="baseSalary" step="0.01" required oninput="calculateInsurance()">
+        fetch('/salary-standards/create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+        })
+            .then(response => {
+                if (response.ok) {
+                    alert('薪酬标准创建成功');
+                    window.location.href = '/salary-standards';
+                } else {
+                    return response.text().then(text => {
+                        alert('薪酬标准创建失败: ' + text);
+                    });
+                }
+            })
+            .catch(error => alert('薪酬标准创建失败: ' + error.message));
+    }
 
-    <label for="pensionInsurance">养老金:</label>
-    <input type="number" id="pensionInsurance" name="pensionInsurance" step="0.01" readonly>
+    function toggleSubmenu(id) {
+        var submenu = document.getElementById(id);
+        var checkbox = document.getElementById('check');
 
-    <label for="medicalInsurance">医疗保险:</label>
-    <input type="number" id="medicalInsurance" name="medicalInsurance" step="0.01" readonly>
+        if (!checkbox.checked) {
+            submenu.style.display = submenu.style.display === "block" ? "none" : "block";
+        } else {
+            checkbox.checked = false;  // 展开导航栏
+            submenu.style.display = submenu.style.display === "block" ? "none" : "block";
+        }
+    }
 
-    <label for="unemploymentInsurance">失业保险:</label>
-    <input type="number" id="unemploymentInsurance" name="unemploymentInsurance" step="0.01" readonly>
+    document.getElementById('check').addEventListener('change', function () {
+        if (this.checked) {
+            var submenus = document.querySelectorAll('.submenu');
+            submenus.forEach(function(submenu) {
+                submenu.style.display = 'none'; // 隐藏子菜单
+            });
+        }
+    });
 
-    <label for="housingFund">住房公积金:</label>
-    <input type="number" id="housingFund" name="housingFund" step="0.01" readonly>
+    function handleLoginLogout() {
+        const currentUserJson = sessionStorage.getItem('currentUser');
+        if (currentUserJson) {
+            logout();
+        } else {
+            window.location.href = "/login";
+        }
+    }
 
-    <div class="button-group">
-        <button type="submit" class="btn">提交</button>
-        <button type="button" class="btn" onclick="window.location.href='/salary-standards'">返回</button>
-    </div>
-</form>
+    function logout() {
+        sessionStorage.removeItem('currentUser');
+        $('#createdBy').text('');
+        $('#logoutButton').text('登录');
+        alert("已登出");
+        window.location.href="/index";
+    }
+
+    function checkAccess(action) {
+        const currentUserJson = sessionStorage.getItem('currentUser');
+        if (!currentUserJson) {
+            alert("请先登录才能访问此页面。");
+            return;
+        }
+        const currentUser = JSON.parse(currentUserJson);
+
+        const roleAccess = {
+            register: [3],
+            review: [4],
+            list: [3, 4],
+            salaryDistributionManagement: [5, 6],
+            salaryStandardManagement: [5, 6]
+        };
+
+        if (roleAccess[action] && roleAccess[action].includes(currentUser.roleId)) {
+            var targetUrl="";
+            if(action=="register"||action=="review"||action=="list"){
+                targetUrl = "/employee/" + action;
+
+            }
+            else{
+                targetUrl = "/" + action;
+            }
+            window.location.href = targetUrl;
+        } else {
+            alert("您没有权限访问此页面。");
+        }
+    }
+
+    $(document).ready(function () {
+        const currentUserJson = sessionStorage.getItem('currentUser');
+        if (currentUserJson) {
+            const currentUser = JSON.parse(currentUserJson);
+            $('#createdBy').text(currentUser.userName);
+            $('#logoutButton').text('登出');
+        }
+    });
+</script>
 
 </body>
 </html>
+
+
+
+

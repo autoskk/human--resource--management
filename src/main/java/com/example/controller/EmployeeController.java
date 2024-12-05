@@ -76,6 +76,7 @@ public class EmployeeController {
         model.addAttribute("salaryStandards", salaryStandardService.findApprovedSalaryStandards("已复核"));
         return "employee_register";
     }
+
     @PostMapping("/register")
     public String registerEmployee(@ModelAttribute EmployeeRecord employeeRecord,
                                    @RequestParam("photoUpload") MultipartFile file) {

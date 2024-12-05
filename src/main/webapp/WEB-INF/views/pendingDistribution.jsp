@@ -1,396 +1,625 @@
+<!DOCTYPE html>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 20px;
-        background-color: #f4f4f4;
-        color: #495057; /* 字体颜色 */
-    }
+<html lang="zh-CN" dir="ltr">
 
-    .form-container, .record-container {
-        margin-bottom: 20px;
-        padding: 20px;
-        background-color: #fff;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
+<head>
+    <meta charset="utf-8">
+    <title>人力资源管理系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style media="screen">
+        a:link {
+            text-decoration: none;
+        }
 
-    h2 {
-        color: #007bff;
-        text-align: center;
-    }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "Roboto", sans-serif;
+            background-color: #f8f9fa; /* 轻微背景色，提供视觉振奋 */
+        }
 
-    label {
-        font-weight: bold;
-    }
+        header {
+            position: fixed;
+            background: #ffffff; /* 将导航栏背景设置为白色 */
+            padding: 20px;
+            width: 100%;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 添加阴影效果 */
+            z-index: 1;
+        }
 
-    .form-row {
-        display: flex;
-        flex-wrap: wrap; /* 允许换行 */
-        gap: 20px; /* 间距 */
-    }
+        .left_area h3 {
+            color: #333; /* 改为较深的颜色以适应新的背景 */
+            margin: 0;
+            text-transform: uppercase;
+            font-size: 22px;
+            font-weight: 900;
+        }
 
-    .form-group {
-        flex: 1; /* 自动调整 */
-        min-width: 250px; /* 设置最小宽度 */
-    }
+        .logout_btn {
+            padding: 5px;
+            background: #19B3D3; /* 保持颜色，以突出显示 */
+            text-decoration: none;
+            float: right;
+            margin-top: -30px;
+            margin-right: 40px;
+            border-radius: 2px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #fff;
+            transition: 0.5s;
+            cursor: pointer;
+        }
 
-    input[type="text"], input[type="number"], select {
-        width: 100%;
-        padding: 10px;
-        margin-bottom: 10px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        box-sizing: border-box;
-    }
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 20px;
-        background-color: #ffffff;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        overflow: hidden;
-    }
-    th, td {
-        border: 1px solid #ddd;
-        padding: 12px;
-        text-align: left;
-    }
-    th {
-        background-color: #007bff;
-        color: white;
-    }
-    tr:hover {
-        background-color: #f1f1f1;
-    }
-    td button {
-        padding: 5px 10px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-    }
+        .logout_btn:hover {
+            background: #0B87A6;
+        }
 
-    button {
-        background-color: #007bff;
-        color: white;
-        padding: 12px 20px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-        margin-right: 5px; /* 按钮间距 */
-    }
+        .sidebar {
+            background: #ffffff; /* 将侧边栏背景设置为白色 */
+            margin-top: 70px;
+            padding-top: 30px;
+            position: fixed;
+            left: 0;
+            width: 250px;
+            height: 100%;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* 添加阴影与立体感 */
+            transition: 0.5s;
+        }
 
-    button:hover {
-        background-color: #0056b3;
-    }
+        .sidebar .profile_image {
+            width: 100px;
+            height: 100px;
+            border-radius: 100px;
+            margin-bottom: 10px;
+        }
 
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 20px;
-        background-color: white;
-        border-radius: 8px;
-        overflow: hidden;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-    th, td {
-        border: 1px solid #dee2e6;
-        padding: 15px;
-        text-align: left;
-    }
-    th {
-        background-color: #007bff;
-        color: white;
-    }
-    tr:hover {
-        background-color: #f1f1f1;
-    }
-    td button {
-        padding: 10px 15px; /* 适当增加内边距 */
-        border: none;
-        border-radius: 5px; /* 圆角 */
-        cursor: pointer;
-        transition: background-color 0.3s, transform 0.3s;
-        font-size: 16px; /* 统一按钮字体大小 */
-    }
-    .edit-btn {
-        background: #28a745;
-        color: white;
-    }
-    .delete-btn {
-        background: #dc3545;
-        color: white;
-    }
-    .edit-btn:hover {
-        background: #218838;
-        transform: translateY(-2px); /* 悬停效果 */
-    }
-    .delete-btn:hover {
-        background: #c82333;
-        transform: translateY(-2px); /* 悬停效果 */
-    }
+        .sidebar h4 {
+            color: #333; /* 统一文本颜色 */
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
 
-    .modal {
-        display: none;
-        position: fixed;
-        z-index: 1;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.4);
-        padding-top: 60px;
-    }
+        .sidebar a {
+            color: #333; /* 改为较深的颜色以适应新的背景 */
+            display: block;
+            width: 100%;
+            line-height: 60px;
+            text-decoration: none;
+            padding-left: 40px;
+            box-sizing: border-box;
+            transition: 0.5s;
+        }
 
-    .modal-content {
-        background-color: #fefefe;
-        margin: 5% auto;
-        padding: 20px;
-        border: 1px solid #888;
-        width: 80%;
-        border-radius: 5px;
-    }
+        .sidebar a:hover {
+            background: #19B3D3; /* 保持原有悬停效果 */
+            color: #fff; /* 悬停背景下文本颜色变为白色 */
+        }
 
-    .close {
-        float: right;
-        font-size: 28px;
-        font-weight: bold;
-    }
+        label #sidebar_btn {
+            z-index: 1;
+            color: #333; /* 改为较深的颜色以适应新的背景 */
+            position: fixed;
+            cursor: pointer;
+            left: 300px; /* 根据布局需调整 */
+            font-size: 20px;
+            margin: 5px 0;
+            transition: 0.5s;
+        }
 
-    .close:hover, .close:focus {
-        color: red;
-        text-decoration: none;
-        cursor: pointer;
-    }
+        label #sidebar_btn:hover {
+            color: #19B3D3;
+        }
 
+        #check {
+            display: none;
+        }
 
-    /* 添加响应式设计 */
-    @media (max-width: 768px) {
+        /* 收缩侧边栏的样式 */
+        #check:checked ~ .sidebar {
+            left: -190px; /* 收缩的宽度 */
+        }
+
+        #check:checked ~ .sidebar a span {
+            display: none; /* 隐藏文字 */
+        }
+
+        #check:checked ~ .sidebar a {
+            font-size: 20px;
+            margin-left: 170px; /* 调整以保持图标的位置 */
+            width: 80px; /* 调整宽度 */
+        }
+
+        /* 隐藏子菜单 */
+        .submenu {
+            display: none;
+            padding-left: 20px;
+        }
+
+        .submenu a {
+            line-height: 40px; /* 子菜单项的高度 */
+            color: #333; /* 文本颜色 */
+        }
+
+        .content {
+            margin-left: 250px;
+            padding: 40px;
+            padding-top: 120px; /* 添加这个属性来保障内容不被导航栏覆盖 */
+            background: #ffffff; /* 内容区域背景颜色 */
+            height: calc(100vh - 100px); /* 减去导航栏高度，确保内容区域不溢出 */
+            transition: 0.5s;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 添加阴影 */
+        }
+
+        #check:checked ~ .content {
+            margin-left: 60px; /* 内容区的 margin 调整 */
+        }
+
+        /* 增加模块描述样式 */
+        .module-description {
+            background: #f9f9f9; /* 模块描述背景颜色 */
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+            transition: box-shadow 0.3s;
+        }
+
+        .module-description:hover {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        h2 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        h3 {
+            color: #2c3e50;
+            font-size: 20px;
+            margin-top: 30px;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #19B3D3;
+            padding-bottom: 5px;
+        }
+
+        p {
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        ul {
+            list-style-type: disc;
+            padding-left: 20px;
+        }
+
+        .quick-actions {
+            background: #e0f7fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        .quick-actions li {
+            margin: 10px 0;
+            font-size: 16px;
+        }
+
+        .quick-actions a {
+            color: #00796b;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .quick-actions a:hover {
+            text-decoration: underline;
+            color: #004d40;
+        }
+
+        h2 {
+            text-align: center;
+            color: #007bff;
+        }
+
+        .form-container, .record-container {
+            margin-bottom: 20px;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #007bff;
+            text-align: center;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
         .form-row {
-            flex-direction: column; /* 移动设备上竖直排列 */
+            display: flex;
+            flex-wrap: wrap; /* 允许换行 */
+            gap: 20px; /* 间距 */
         }
+
+        .form-group {
+            flex: 1; /* 自动调整 */
+            min-width: 250px; /* 设置最小宽度 */
+        }
+
+        input[type="text"], input[type="number"], select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        td button {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
         button {
-            width: 100%; /* 移动设备上按钮全宽 */
-            margin: 5px 0; /* 重新设置按钮间距 */
+            background-color: #007bff;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-right: 5px; /* 按钮间距 */
         }
-    }
-</style>
-<div class="form-container">
-    <h2>复核薪酬发放单</h2>
-    <form id="registerDistributionForm">
-        <div class="form-row">
-            <div class="form-group">
-                <label>发放单编号:</label>
-                <input type="text" id="distributionID" name="distributionID" readonly />
-            </div>
 
-            <div class="form-group">
-                <label>一级机构:</label>
-                <select id="levelOneId" name="levelOneId" disabled>
-                    <option value="" disabled selected>请选择一级机构</option>
-                    <c:forEach var="level1" items="${level1Organizations}">
-                        <option value="${level1.level1Id}">${level1.level1Name}</option>
-                    </c:forEach>
-                </select>
-            </div>
+        button:hover {
+            background-color: #0056b3;
+        }
 
-            <div class="form-group">
-                <label>二级机构:</label>
-                <select id="levelTwoId" name="levelTwoId" disabled>
-                    <option value="" disabled selected>请选择二级机构</option>
-                </select>
-            </div>
+        .edit-btn {
+            background: #28a745;
+            color: white;
+        }
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+        }
+        .edit-btn:hover {
+            background: #218838;
+            transform: translateY(-2px); /* 悬停效果 */
+        }
+        .delete-btn:hover {
+            background: #c82333;
+            transform: translateY(-2px); /* 悬停效果 */
+        }
 
-            <div class="form-group">
-                <label>三级机构:</label>
-                <select id="levelThreeId" name="levelThreeId" disabled>
-                    <option value="" disabled selected>请选择三级机构</option>
-                </select>
-            </div>
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+            padding-top: 0px;
+        }
 
-            <div class="form-group">
-                <label>人数:</label>
-                <input type="number" id="numberOfEmployees" name="numberOfEmployees" readonly />
-            </div>
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            border-radius: 5px;
+        }
 
-            <div class="form-group">
-                <label>基本薪酬总额:</label>
-                <input type="number" id="totalBaseSalary" name="totalBaseSalary" step="0.01" readonly />
-            </div>
+        .close {
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
 
-            <div class="form-group">
-                <label>实际薪酬总额:</label>
-                <input type="number" id="totalSalary" name="totalSalary" step="0.01" readonly />
-            </div>
+        .close:hover, .close:focus {
+            color: red;
+            text-decoration: none;
+            cursor: pointer;
+        }
 
-            <div class="form-group">
-                <label>状态:</label>
-                <select name="status" disabled>
-                    <option value="待登记" selected>待登记</option>
-                    <option value="待复核">待复核</option>
-                    <option value="已复核">已复核</option>
-                </select>
-            </div>
 
-            <div class="form-group">
-                <label>登记人:</label>
-                <input type="text" name="registrar" readonly />
-            </div>
+        /* 添加响应式设计 */
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column; /* 移动设备上竖直排列 */
+            }
+            button {
+                width: 100%; /* 移动设备上按钮全宽 */
+                margin: 5px 0; /* 重新设置按钮间距 */
+            }
+        }
+    </style>
 
-            <div class="form-group">
-                <label>登记时间:</label>
-                <input type="text" name="registrationTime" id="registrationTime" readonly />
-            </div>
-        </div>
+</head>
 
-        <div>
-            <button type="button" id="saveDistributionButton">保存</button>
-            <button type="button" id="registerDistributionButton">复核</button>
-            <button type="button" id="showEmployeeCompensationFormButton">登记员工薪酬信息</button>
-            <button type="button" onclick="back()">返回</button>
-        </div>
-    </form>
+<body>
+<input type="checkbox" id="check">
+<header>
+    <label for="check">
+        <i class="fas fa-bars" id="sidebar_btn"></i>
+    </label>
+    <div class="left_area">
+        <h3>人力资源管理系统</h3>
+    </div>
+    <div class="right_area">
+        <a href="javascript:void(0);" class="logout_btn" id="logoutButton" onclick="handleLoginLogout()">登录</a>
+    </div>
+</header>
+
+<div class="sidebar">
+    <div style="text-align: center;">
+        <img src="https://img95.699pic.com/xsj/10/gk/q8.jpg!/fh/300" class="profile_image" alt="">
+        <h4 id="createdBy"></h4>
+    </div>
+
+    <a href="${pageContext.request.contextPath}/employee/home"><i class="fas fa-home"></i><span>首页</span></a>
+
+    <a href="javascript:void(0);" onclick="toggleSubmenu('hrManagement');">
+        <i class="fas fa-address-card"></i><span>人力资源档案管理</span></a>
+    <div id="hrManagement" class="submenu">
+        <a href="javascript:void(0);" onclick="checkAccess('register')">档案登记</a>
+        <a href="javascript:void(0);" onclick="checkAccess('list')">档案列表</a>
+        <a href="javascript:void(0);" onclick="checkAccess('review')">档案复核</a>
+    </div>
+
+    <a href="javascript:void(0);" onclick="toggleSubmenu('salaryManagement');">
+        <i class="fas fa-money-check"></i><span>薪酬管理</span></a>
+    <div id="salaryManagement" class="submenu">
+        <a href="javascript:void(0);" onclick="checkAccess('salaryDistributionManagement')">薪酬发放管理</a>
+        <a href="javascript:void(0);" onclick="checkAccess('salaryStandardManagement')">薪酬标准管理</a>
+    </div>
 </div>
 
-<div class="record-container">
-    <table id="employeeCompensationTable">
-        <thead>
-        <tr>
-            <th>员工编号</th>
-            <th>薪酬标准名称</th>
-            <th>姓名</th>
-            <th>基本薪资</th>
-            <th>养老保险</th>
-            <th>医疗保险</th>
-            <th>失业保险</th>
-            <th>住房公积金</th>
-            <th>补助</th>
-            <th>奖励奖金</th>
-            <th>应扣奖金</th>
-            <th>操作</th>
-        </tr>
-        </thead>
-        <tbody>
-        <c:if test="${not empty employeeCompensations}">
-            <c:forEach var="record" items="${employeeCompensations}">
-                <tr>
-                    <td>${record.employeeId}</td>
-                    <td class="salaryStandardName">${record.salaryStandardID}</td>
-                    <td class="employeeName">${record.salaryStandardID}</td>
-                    <td class="baseSalary">${record.baseSalary}</td>
-                    <td class="pensionInsurance">${record.pensionInsurance != null ? record.pensionInsurance : '—'}</td>
-                    <td class="medicalInsurance">${record.medicalInsurance != null ? record.medicalInsurance : '—'}</td>
-                    <td class="unemploymentInsurance">${record.unemploymentInsurance != null ? record.unemploymentInsurance : '—'}</td>
-                    <td class="housingFund">${record.housingFund != null ? record.housingFund : '—'}</td>
-                    <td>${record.allowances}</td>
-                    <td>${record.bonus}</td>
-                    <td>${record.deductions}</td>
-                    <td>
-                        <button class="edit-btn" onclick="editEmployeeCompensation('${record.employeeId}')">编辑</button>
-                        <button class="delete-btn" onclick="deleteEmployeeCompensation('${record.employeeId}','${record.distributionId}')">删除</button>
-                    </td>
-                </tr>
-            </c:forEach>
-        </c:if>
-        <c:if test="${empty employeeCompensations}">
-            <tr>
-                <td colspan="12" style="text-align: center;">没有可显示的员工薪酬信息</td>
-            </tr>
-        </c:if>
-        </tbody>
-    </table>
-</div>
-
-<!-- Employee Compensation Modal -->
-<div id="employeeCompensationModal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeModal('employeeCompensationModal')">&times;</span>
-        <h2>登记员工薪酬信息</h2>
-        <form id="employeeCompensationForm">
+<div class="content">
+    <div class="form-container">
+        <h2>复核薪酬发放单</h2>
+        <form id="registerDistributionForm">
             <div class="form-row">
                 <div class="form-group">
-                    <label>员工编号:</label>
-                    <select name="employeeId" id="employeeIdSelect" required>
-                        <option value="">请选择员工编号</option>
-                        <c:forEach var="employee" items="${employees}">
-                            <option value="${employee.recordId}">${employee.recordId} - ${employee.employeeName}</option>
+                    <label>发放单编号:</label>
+                    <input type="text" id="distributionID" name="distributionID" readonly />
+                </div>
+
+                <div class="form-group">
+                    <label>一级机构:</label>
+                    <select id="levelOneId" name="levelOneId" disabled>
+                        <option value="" disabled selected>请选择一级机构</option>
+                        <c:forEach var="level1" items="${level1Organizations}">
+                            <option value="${level1.level1Id}">${level1.level1Name}</option>
                         </c:forEach>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label>薪酬标准编号:</label>
-                    <select name="salaryStandardId" id="salaryStandardSelect" onchange="fillSalaryStandardInfo()">
-                        <option value="">请选择薪酬标准</option>
+                    <label>二级机构:</label>
+                    <select id="levelTwoId" name="levelTwoId" disabled>
+                        <option value="" disabled selected>请选择二级机构</option>
                     </select>
                 </div>
-            </div>
 
-            <div class="form-row">
                 <div class="form-group">
-                    <label>基本薪资:</label>
-                    <input type="number" name="baseSalary" id="baseSalary" step="0.01" readonly />
+                    <label>三级机构:</label>
+                    <select id="levelThreeId" name="levelThreeId" disabled>
+                        <option value="" disabled selected>请选择三级机构</option>
+                    </select>
                 </div>
 
                 <div class="form-group">
-                    <label>养老保险:</label>
-                    <input type="number" name="pensionInsurance" id="pensionInsurance" step="0.01" readonly />
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label>医疗保险:</label>
-                    <input type="number" name="medicalInsurance" id="medicalInsurance" step="0.01" readonly />
+                    <label>人数:</label>
+                    <input type="number" id="numberOfEmployees" name="numberOfEmployees" readonly />
                 </div>
 
                 <div class="form-group">
-                    <label>失业保险:</label>
-                    <input type="number" name="unemploymentInsurance" id="unemploymentInsurance" step="0.01" readonly />
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label>住房公积金:</label>
-                    <input type="number" name="housingFund" id="housingFund" step="0.01" readonly />
+                    <label>基本薪酬总额:</label>
+                    <input type="number" id="totalBaseSalary" name="totalBaseSalary" step="0.01" readonly />
                 </div>
 
                 <div class="form-group">
-                    <label>补助:</label>
-                    <input type="number" name="allowances" step="0.01" value="0.00" required />
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label>奖励奖金:</label>
-                    <input type="number" name="bonus" step="0.01" value="0.00" required />
+                    <label>实际薪酬总额:</label>
+                    <input type="number" id="totalSalary" name="totalSalary" step="0.01" readonly />
                 </div>
 
                 <div class="form-group">
-                    <label>应扣奖金:</label>
-                    <input type="number" name="deductions" step="0.01" value="0.00" required />
+                    <label>状态:</label>
+                    <select name="status" disabled>
+                        <option value="待登记" selected>待登记</option>
+                        <option value="待复核">待复核</option>
+                        <option value="已复核">已复核</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>登记人:</label>
+                    <input type="text" name="registrar" readonly />
+                </div>
+
+                <div class="form-group">
+                    <label>登记时间:</label>
+                    <input type="text" name="registrationTime" id="registrationTime" readonly />
                 </div>
             </div>
 
-            <input type="hidden" name="distributionId"/>
-            <button type="submit">保存</button>
+            <div>
+                <button type="button" id="saveDistributionButton">保存</button>
+                <button type="button" id="registerDistributionButton">复核</button>
+                <button type="button" id="showEmployeeCompensationFormButton">登记员工薪酬信息</button>
+                <button type="button" onclick="back()">返回</button>
+            </div>
         </form>
+    </div>
+
+    <div class="record-container">
+        <table id="employeeCompensationTable">
+            <thead>
+            <tr>
+                <th>员工编号</th>
+                <th>薪酬标准名称</th>
+                <th>姓名</th>
+                <th>基本薪资</th>
+                <th>养老保险</th>
+                <th>医疗保险</th>
+                <th>失业保险</th>
+                <th>住房公积金</th>
+                <th>补助</th>
+                <th>奖励奖金</th>
+                <th>应扣奖金</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <c:if test="${not empty employeeCompensations}">
+                <c:forEach var="record" items="${employeeCompensations}">
+                    <tr>
+                        <td>${record.employeeId}</td>
+                        <td class="salaryStandardName">${record.salaryStandardID}</td>
+                        <td class="employeeName">${record.salaryStandardID}</td>
+                        <td class="baseSalary">${record.baseSalary}</td>
+                        <td class="pensionInsurance">${record.pensionInsurance != null ? record.pensionInsurance : '—'}</td>
+                        <td class="medicalInsurance">${record.medicalInsurance != null ? record.medicalInsurance : '—'}</td>
+                        <td class="unemploymentInsurance">${record.unemploymentInsurance != null ? record.unemploymentInsurance : '—'}</td>
+                        <td class="housingFund">${record.housingFund != null ? record.housingFund : '—'}</td>
+                        <td>${record.allowances}</td>
+                        <td>${record.bonus}</td>
+                        <td>${record.deductions}</td>
+                        <td>
+                            <button class="edit-btn" onclick="editEmployeeCompensation('${record.employeeId}')">编辑</button>
+                            <button class="delete-btn" onclick="deleteEmployeeCompensation('${record.employeeId}','${record.distributionId}')">删除</button>
+                        </td>
+                    </tr>
+                </c:forEach>
+            </c:if>
+            <c:if test="${empty employeeCompensations}">
+                <tr>
+                    <td colspan="12" style="text-align: center;">没有可显示的员工薪酬信息</td>
+                </tr>
+            </c:if>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Employee Compensation Modal -->
+    <div id="employeeCompensationModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('employeeCompensationModal')">&times;</span>
+            <h2>登记员工薪酬信息</h2>
+            <form id="employeeCompensationForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>员工编号:</label>
+                        <select name="employeeId" id="employeeIdSelect" required>
+                            <option value="">请选择员工编号</option>
+                            <c:forEach var="employee" items="${employees}">
+                                <option value="${employee.recordId}">${employee.recordId} - ${employee.employeeName}</option>
+                            </c:forEach>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>薪酬标准编号:</label>
+                        <select name="salaryStandardId" id="salaryStandardSelect" onchange="fillSalaryStandardInfo()">
+                            <option value="">请选择薪酬标准</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>基本薪资:</label>
+                        <input type="number" name="baseSalary" id="baseSalary" step="0.01" readonly />
+                    </div>
+
+                    <div class="form-group">
+                        <label>养老保险:</label>
+                        <input type="number" name="pensionInsurance" id="pensionInsurance" step="0.01" readonly />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>医疗保险:</label>
+                        <input type="number" name="medicalInsurance" id="medicalInsurance" step="0.01" readonly />
+                    </div>
+
+                    <div class="form-group">
+                        <label>失业保险:</label>
+                        <input type="number" name="unemploymentInsurance" id="unemploymentInsurance" step="0.01" readonly />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>住房公积金:</label>
+                        <input type="number" name="housingFund" id="housingFund" step="0.01" readonly />
+                    </div>
+
+                    <div class="form-group">
+                        <label>补助:</label>
+                        <input type="number" name="allowances" step="0.01" value="0.00" required />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>奖励奖金:</label>
+                        <input type="number" name="bonus" step="0.01" value="0.00" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label>应扣奖金:</label>
+                        <input type="number" name="deductions" step="0.01" value="0.00" required />
+                    </div>
+                </div>
+
+                <input type="hidden" name="distributionId"/>
+                <button type="submit">保存</button>
+            </form>
+        </div>
     </div>
 </div>
 
-
 <script>
+
     $(document).ready(function () {
 
         // Load distribution data
@@ -931,4 +1160,85 @@
         $(this).closest('.modal').fadeOut();
     });
 
+    function toggleSubmenu(id) {
+        var submenu = document.getElementById(id);
+        var checkbox = document.getElementById('check');
+
+        if (!checkbox.checked) {
+            submenu.style.display = submenu.style.display === "block" ? "none" : "block";
+        } else {
+            checkbox.checked = false;  // 展开导航栏
+            submenu.style.display = submenu.style.display === "block" ? "none" : "block";
+        }
+    }
+
+    document.getElementById('check').addEventListener('change', function () {
+        if (this.checked) {
+            var submenus = document.querySelectorAll('.submenu');
+            submenus.forEach(function(submenu) {
+                submenu.style.display = 'none'; // 隐藏子菜单
+            });
+        }
+    });
+
+    function handleLoginLogout() {
+        const currentUserJson = sessionStorage.getItem('currentUser');
+        if (currentUserJson) {
+            logout();
+        } else {
+            window.location.href = "/login";
+        }
+    }
+
+    function logout() {
+        sessionStorage.removeItem('currentUser');
+        $('#createdBy').text('');
+        $('#logoutButton').text('登录');
+        alert("已登出");
+        window.location.href="/index";
+    }
+
+    function checkAccess(action) {
+        const currentUserJson = sessionStorage.getItem('currentUser');
+        if (!currentUserJson) {
+            alert("请先登录才能访问此页面。");
+            return;
+        }
+        const currentUser = JSON.parse(currentUserJson);
+
+        const roleAccess = {
+            register: [3],
+            review: [4],
+            list: [3, 4],
+            salaryDistributionManagement: [5, 6],
+            salaryStandardManagement: [5, 6]
+        };
+
+        if (roleAccess[action] && roleAccess[action].includes(currentUser.roleId)) {
+            var targetUrl="";
+            if(action=="register"||action=="review"||action=="list"){
+                targetUrl = "/employee/" + action;
+
+            }
+            else{
+                targetUrl = "/" + action;
+            }
+            window.location.href = targetUrl;
+        } else {
+            alert("您没有权限访问此页面。");
+        }
+    }
+
+    $(document).ready(function () {
+        const currentUserJson = sessionStorage.getItem('currentUser');
+        if (currentUserJson) {
+            const currentUser = JSON.parse(currentUserJson);
+            $('#createdBy').text(currentUser.userName);
+            $('#logoutButton').text('登出');
+        }
+    });
 </script>
+
+</body>
+</html>
+
